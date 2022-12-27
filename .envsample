@@ -4,3 +4,9 @@ cpUsername=
 cpPassword=
 cpCustomerNumber=
 
+#UBER
+
+uberClientId=
+uberClientSecret=
+uberCustomerId=
+
