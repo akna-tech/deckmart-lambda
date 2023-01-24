@@ -55,25 +55,3 @@ exports.getRates =  async function(event, context) {
         }
     }
 }
-
-
-exports.postOrder = async function(event, context) {
-    const { 
-        // https://github.com/t3rminus/canada-post/blob/master/API.md#:~:text=onestepshipping/createshipment.jsf-,Arguments,-%3A
-        order
-    } = event.body
-
-    try {
-        const response = await cpClient.createShipment(order)
-        return {
-            statusCode: 200,
-            body: JSON.stringify(response)
-        }
-    }
-    catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(error)
-        }
-    }
-}
