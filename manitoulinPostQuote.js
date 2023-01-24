@@ -1,24 +1,22 @@
 const axios = require('axios')
 const { manitoulin_username, manitoulin_password } = process.env
 
-async function getAuthToken () {
+async function getAuthToken() {
   const body = {
-    "username": manitoulin_username,
-    "password": manitoulin_password,
-    "company": "MANITOULIN"
-  }
-  console.log(body)
+    username: manitoulin_username,
+    password: manitoulin_password,
+    company: "MANITOULIN",
+  };
   try {
-    const { token } = await axios({
-      method: 'post',
-      url: 'https://www.mtdirect.ca/api/users/auth',
-      headers: {}, 
-      data: body
+    const result = await axios({
+      method: "post",
+      url: "https://www.mtdirect.ca/api/users/auth",
+      data: body,
     });
-    return token
-  }
-  catch (error) {
-    console.log(JSON.stringify(error))
+    const { token } = result.data;
+    return token;
+  } catch (error) {
+    console.log("error getting auth", JSON.stringify(error));
   }
 }
 
@@ -29,7 +27,7 @@ exports.postQouting = async function(event, context) {
     name: "Alex",
     company: "DECKMART BUILDING SUPPLIES",
     contact_method: "P",
-    contact_method_value: 19058125029,
+    contact_method_value: 9058125029,
     shipment_type: "ROAD",
     shipment_terms: "PPD",
   }
@@ -37,7 +35,7 @@ exports.postQouting = async function(event, context) {
   const origin = {
     city: "North York",
     province: "ON",
-    postal_zip: "M9L 1P9",
+    postal_zip: "M9L1P9",
     residential_pickup: false,
     tailgate_pickup: true,
     flat_deck_pickup: true,
@@ -70,16 +68,27 @@ exports.postQouting = async function(event, context) {
   }
 
   try {
-    const response = await axios.post('https://www.mtdirect.ca/api/online_quoting/quote', body, { headers })
+    const response = await axios.post(
+      "https://www.mtdirect.ca/api/online_quoting/quote",
+      body,
+      { headers }
+    );
     return {
       statusCode: 200,
-      body: JSON.stringify(response.data)
-    }
+      body: body,
+    };
   }
-  catch (error) {
-    console.log(JSON.stringify(error))
+  catch (err) {
+    if (err.response.data && err.response.status) {
+      return {
+        body: err.response.data,
+        statusCode: err.response.status,
+      };
+    }
+    console.log(err.message)
     return {
+      body: "internal error",
       statusCode: 500,
-    }
+    };
   }
-}
+};
