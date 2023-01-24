@@ -30,7 +30,6 @@ exports.postOrder = async function (event, context) {
     consigneeCity,
     consigneeProvince,
     consigneePostal,
-    consigneePhone,
   } = event.body
 
   const shipper = {
@@ -51,7 +50,6 @@ exports.postOrder = async function (event, context) {
     city: consigneeCity,
     province: consigneeProvince,
     postal: consigneePostal,
-    phone: consigneePhone
   }
 
   // pickup date is 1 day after now in the format YYYY-MM-DD
@@ -66,7 +64,7 @@ exports.postOrder = async function (event, context) {
     items,
     description: 'test order',
     pickup_date: pickupDateFormatted, // ???
-    pickup_time: '10:00', // ???
+    ready_time: '10:00', // ???
     closing_time: '17:00', // ???
     guaranteed_service: true, // ???
     guaranteed_option: 'By noon', // ??? or 4pm
@@ -81,7 +79,7 @@ exports.postOrder = async function (event, context) {
   };
   try {
     const response = await axios.post(
-      "https://www.mtdirect.ca/api/online_quoting/quote",
+      "https://www.mtdirect.ca/api/online_pickup/submit",
       body,
       { headers }
     );

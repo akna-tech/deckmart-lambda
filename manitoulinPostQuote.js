@@ -75,11 +75,17 @@ exports.postQouting = async function(event, context) {
     );
     return {
       statusCode: 200,
-      body: body,
+      body: { total: responsedata.total_charge },
     };
   }
   catch (err) {
     if (err.response.data && err.response.status) {
+      if (err.response.data === 'Could not find rate quote') {
+        return {
+          body: 'Could not find rate quote',
+          statusCode: 204,
+        };
+      }
       return {
         body: err.response.data,
         statusCode: err.response.status,
@@ -92,3 +98,26 @@ exports.postQouting = async function(event, context) {
     };
   }
 };
+
+// example request body
+// {
+//   "body": {
+//     "destinationCity": "CALGARY",
+//     "destinationProvince": "AB",
+//     "destinationZip": "T2A1A1",
+//     "items": [
+//       {
+//         "class_value": "50",
+//         "pieces": "10",
+//         "package_code_value": "PL",
+//         "description": "Pallettes",
+//         "total_weight": "35",
+//         "weight_unit_value": "LBS",
+//         "length": 40,
+//         "width": 48,
+//         "height": 3,
+//         "unit_value": "I"
+//       }
+//     ]
+//   }
+// }
