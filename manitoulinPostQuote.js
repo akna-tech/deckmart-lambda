@@ -1,6 +1,11 @@
 const axios = require('axios')
 const { manitoulin_username, manitoulin_password } = process.env
 
+const errorResponse = {
+  quoteNotFound: "Could not find rate quote",
+  wrongAddress: "The Destination city or province/state cannot be found in our system. Please clear the page and attempt your search by city or postal/zip first. If you still encounter difficulty, please call 1-800-265-1485 for assistance with your rate quote.",
+}
+
 async function getAuthToken() {
   const body = {
     username: manitoulin_username,
@@ -45,9 +50,9 @@ exports.postQouting = async function(event, context) {
   }
 
   const destination = {
-    city: destinationCity,
-    province: destinationProvince,
-    postal_zip: destinationZip,
+    city: destinationCity.toUpperCase(),
+    province: destinationProvince.toUpperCase(),
+    postal_zip: destinationZip.toUpperCase(),
     residential_pickup: true,
     tailgate_pickup: true,
     flat_deck_pickup: false,
@@ -68,22 +73,34 @@ exports.postQouting = async function(event, context) {
   }
 
   try {
-    const response = await axios.post(
+    const { data } = await axios.post(
       "https://www.mtdirect.ca/api/online_quoting/quote",
       body,
       { headers }
     );
+    const { id, timestamp, quote, total_charge } = data
     return {
       statusCode: 200,
-      body: { total: responsedata.total_charge },
+      body: { 
+        id,
+        gen_date: timestamp,
+        quote_num: quote,
+        total_charge,
+      },
     };
   }
   catch (err) {
     if (err.response.data && err.response.status) {
-      if (err.response.data === 'Could not find rate quote') {
+      if (err.response.data === errorResponse.quoteNotFound) {
         return {
           body: 'Could not find rate quote',
           statusCode: 204,
+        };
+      }
+      if (err.response.data === errorResponse.wrongAddress) {
+        return {
+          body: 'Invalid address',
+          statusCode: 406,
         };
       }
       return {
@@ -102,20 +119,32 @@ exports.postQouting = async function(event, context) {
 // example request body
 // {
 //   "body": {
-//     "destinationCity": "CALGARY",
-//     "destinationProvince": "AB",
-//     "destinationZip": "T2A1A1",
+//     "destinationCity": "TOLEDO",
+//     "destinationProvince": "ON",
+//     "destinationZip": "K0E1Y0",
 //     "items": [
 //       {
-//         "class_value": "50",
-//         "pieces": "10",
-//         "package_code_value": "PL",
-//         "description": "Pallettes",
-//         "total_weight": "35",
+//         "class_value": "70",
+//         "pieces": 1,
+//         "package_code_value": "BX",
+//         "description": "Buckles CB 8L & CC Strap 86 Ultrafl",
+//         "total_weight": 1405,
 //         "weight_unit_value": "LBS",
-//         "length": 40,
+//         "length": 32,
 //         "width": 48,
-//         "height": 3,
+//         "height": 49,
+//         "unit_value": "I"
+//       },
+//       {
+//         "class_value": "70",
+//         "pieces": 1,
+//         "package_code_value": "BX",
+//         "description": "CC Strap 86 Ultraflex",
+//         "total_weight": 1330,
+//         "weight_unit_value": "LBS",
+//         "length": 32,
+//         "width": 48,
+//         "height": 79,
 //         "unit_value": "I"
 //       }
 //     ]
