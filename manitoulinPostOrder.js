@@ -47,9 +47,9 @@ exports.postOrder = async function (event, context) {
     company: consigneeCompany,
     contact: consigneeContact,
     address: consigneeAddress,
-    city: consigneeCity,
-    province: consigneeProvince,
-    postal: consigneePostal,
+    city: consigneeCity.toUpperCase(),
+    province: consigneeProvince.toUpperCase(),
+    postal: consigneePostal.toUpperCase(),
   }
 
   // pickup date is 1 day after now in the format YYYY-MM-DD
@@ -78,14 +78,20 @@ exports.postOrder = async function (event, context) {
     Authorization: `Token ${token}`,
   };
   try {
-    const response = await axios.post(
+    const { data } = await axios.post(
       "https://www.mtdirect.ca/api/online_pickup/submit",
       body,
       { headers }
     );
+    const { puNumber, pickup_date, ready_time, closing_time } = data;
     return {
       statusCode: 200,
-      body: body,
+      body: {
+        puNumber,
+        pickup_date,
+        ready_time,
+        closing_time
+      },
     };
   } catch (err) {
     if (err.response.data && err.response.status) {
