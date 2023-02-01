@@ -56,7 +56,9 @@ exports.postOrder = async function (event, context) {
   const pickupDate = new Date();
   pickupDate.setDate(pickupDate.getDate() + 1);
   const pickupDateFormatted = pickupDate.toISOString().split("T")[0];
-
+  const readyTime = '10:00';
+  const closingTime = '17:00';
+  
   const body = {
     requester: 'Shipper',
     shipper,
@@ -64,8 +66,8 @@ exports.postOrder = async function (event, context) {
     items,
     description: 'test order',
     pickup_date: pickupDateFormatted, // ???
-    ready_time: '10:00', // ???
-    closing_time: '17:00', // ???
+    ready_time: readyTime,
+    closing_time: closingTime,
     guaranteed_service: true, // ???
     guaranteed_option: 'By noon', // ??? or 4pm
     special_delivery_instruction: 'this is a test!!!',
@@ -83,14 +85,15 @@ exports.postOrder = async function (event, context) {
       body,
       { headers }
     );
-    const { puNumber, pickup_date, ready_time, closing_time } = data;
+
+    const { punum } = data;
     return {
       statusCode: 200,
       body: {
-        puNumber,
-        pickup_date,
-        ready_time,
-        closing_time
+        punum,
+        pickup_date: pickupDateFormatted,
+        closingTime,
+        readyTime
       },
     };
   } catch (err) {
