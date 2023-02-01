@@ -110,3 +110,28 @@ exports.postOrder = async function (event, context) {
     };
   }
 };
+
+// example request body
+// {
+//   "body": {
+//     "consigneeCompany": "Test",
+//     "consigneeContact": "Test",
+//     "consigneeAddress": "Test",
+//     "consigneeCity": "Toronto",
+//     "consigneeProvince": "ON",
+//     "consigneePostal": "T2A1A1",
+//     "items": [
+//       {
+//         "item_class": "250",
+//         "pieces": 10,
+//         "package_code": "argo",
+//         "weight": 5,
+//         "weight_units": "kg",
+//         "length": 40,
+//         "width": 5,
+//         "height": 48,
+//         "dimension_units": "CM"
+//       }
+//     ]
+//   }
+// }
