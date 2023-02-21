@@ -1,42 +1,22 @@
 const axios = require("axios");
-const { manitoulin_username, manitoulin_password } = process.env;
+import { getManitoulinAuthToken } from './auth.js';
+import { formatManitoulinOrderItems } from './helper.js';
 
-async function getAuthToken() {
-  const body = {
-    username: manitoulin_username,
-    password: manitoulin_password,
-    company: "MANITOULIN",
-  };
-  try {
-    const result = await axios({
-      method: "post",
-      url: "https://www.mtdirect.ca/api/users/auth",
-      data: body,
-    });
-    const { token } = result.data;
-    return token;
-  } catch (error) {
-    console.log("error getting auth", JSON.stringify(error));
-  }
-}
-
-exports.postOrder = async function (event, context) {
-  // https://www.mtdirect.ca/documents/apis/onlinePickup
-  const { 
-    items,
-    consigneeCompany, 
-    consigneeContact,
-    consigneeAddress,
-    consigneeCity,
-    consigneeProvince,
-    consigneePostal,
-  } = event.body
-
+// https://www.mtdirect.ca/documents/apis/onlinePickup
+export async function createManitoulinOrder ({ 
+  items,
+  consigneeCompany, 
+  consigneeContact,
+  consigneeAddress,
+  consigneeCity,
+  consigneeProvince,
+  consigneePostal,
+}) {
   const shipper = {
     company: "DECKMART BUILDING SUPPLIES",
     contact: "Alex",
     address: "601 Garyray Dr",
-    private_residence: false, // ???
+    private_residence: false,
     city: "North York",
     province: "ON",
     postal: "M9L1P9",
@@ -58,24 +38,26 @@ exports.postOrder = async function (event, context) {
   const pickupDateFormatted = pickupDate.toISOString().split("T")[0];
   const readyTime = '10:00';
   const closingTime = '17:00';
-  
+
+  const fomrattedItems = formatManitoulinOrderItems(items);
+
   const body = {
     requester: 'Shipper',
     shipper,
     consignee,
-    items,
-    description: 'test order',
-    pickup_date: pickupDateFormatted, // ???
+    items: fomrattedItems,
+    description: 'test', // TODO update before release
+    pickup_date: pickupDateFormatted, // TODO check date and time logic
     ready_time: readyTime,
     closing_time: closingTime,
-    guaranteed_service: true, // ???
-    guaranteed_option: 'By noon', // ??? or 4pm
+    guaranteed_service: true,
+    guaranteed_option: 'By noon',
     special_delivery_instruction: 'this is a test!!!',
     freight_charge_party: 'Prepaid',
-    confirm_pickup_receipt: false, // ???
+    confirm_pickup_receipt: false,
   }
 
-  const token = await getAuthToken();
+  const token = await getManitoulinAuthToken();
   const headers = {
     Authorization: `Token ${token}`,
   };
@@ -88,25 +70,28 @@ exports.postOrder = async function (event, context) {
 
     const { punum } = data;
     return {
-      statusCode: 200,
-      body: {
+      data: {
         punum,
         pickup_date: pickupDateFormatted,
         closingTime,
         readyTime
-      },
+      }
     };
   } catch (err) {
     if (err.response.data && err.response.status) {
       return {
-        body: err.response.data,
-        statusCode: err.response.status,
+        error: {
+          message: err.response.data,
+          statusCode: err.response.status,
+        }    
       };
     }
     console.log(err.message)
     return {
-      body: "internal error",
-      statusCode: 500,
+      error: {
+        message: 'Unable to create manitoulin order',
+        statusCode: 500,
+      }    
     };
   }
 };
