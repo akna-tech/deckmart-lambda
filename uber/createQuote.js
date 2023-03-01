@@ -1,4 +1,4 @@
-import { validateUberItems } from './uber/helper.js';
+import { validateUberItems } from './helper.js';
 
 export async function createUberQuote(items) {
     const { error, data } = validateUberItems(items);

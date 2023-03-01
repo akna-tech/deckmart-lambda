@@ -1,6 +1,6 @@
-const axios = require('axios')
-const { getManitoulinAuthToken } = require('./auth')
-const { formatManitoulinOrderItems } = require('./helper')
+import axios from "axios";
+import { getManitoulinAuthToken } from './auth.js';
+import { formatManitoulinQuoteItems } from './helper.js';
 
 const errorResponse = {
   quoteNotFound: "Could not find rate quote",
@@ -42,7 +42,6 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
   }
 
   const formattedItems = formatManitoulinQuoteItems(items)
-
   const body = {
     contact,
     origin,
@@ -56,11 +55,12 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
   }
 
   try {
-    const { data } = await axios.post(
+    const result = await axios.post(
       "https://www.mtdirect.ca/api/online_quoting/quote",
       body,
       { headers }
     );
+    const { data } = result
     const { id, timestamp, quote, total_charge } = data
     return {
       data: { 
@@ -72,6 +72,7 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
     };
   }
   catch (err) {
+    console.log(JSON.stringify(err))
     if (err.response.data && err.response.status) {
       if (err.response.data === errorResponse.quoteNotFound) {
         return {

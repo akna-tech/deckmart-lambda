@@ -1,9 +1,9 @@
-import { createManitoulinOrder } from './manitoulin/crateOrder.js';
+import { createManitoulinOrder } from './manitoulin/createOrder.js';
 import { createUberOrder } from './uber/createOrder.js';
 import { createManitoulinQuote } from './manitoulin/createQuote.js';
 import { createUberQuote } from './uber/createQuote.js';
 
-export async function createOrder(body) {
+async function createOrder(body, service) {
     const {
         items,
         consigneeCompany, 
@@ -14,45 +14,49 @@ export async function createOrder(body) {
         consigneePostal,
     } = body;
     let manitoulinResult, uberResult;
-    try {
-        manitoulinResult = await createManitoulinOrder({
-            items,
-            consigneeCompany,
-            consigneeContact,
-            consigneeAddress,
-            consigneeCity,
-            consigneeProvince,
-            consigneePostal,
-        });
+    if (service === 'manitoulin') {
+        try {
+            manitoulinResult = await createManitoulinOrder({
+                items,
+                consigneeCompany,
+                consigneeContact,
+                consigneeAddress,
+                consigneeCity,
+                consigneeProvince,
+                consigneePostal,
+            });
+            return manitoulinResult;
+        }
+        catch (err) {
+            console.log(err.message);
+            manitoulinResult = {
+                error: {
+                    message: 'Unable to create manitoulin order',
+                    statusCode: 500,
+                }
+            };
+            return manitoulinResult;
+        }
     }
-    catch (err) {
-        console.log(err.message);
-        manitoulinResult = {
-            error: {
-                message: 'Unable to create manitoulin order',
-                statusCode: 500,
-            }
-        };
+    if (service === 'uber') {
+        try {
+            uberResult = await createUberOrder({items});
+            return uberResult;
+        }
+        catch (err) {
+            console.log(err.message);
+            uberResult = {
+                error: {
+                    message: 'Unable to create uber order',
+                    statusCode: 500,
+                }
+            };
+            return uberResult;
+        }
     }
-    try {
-        uberResult = await createUberOrder({items});
-    }
-    catch (err) {
-        console.log(err.message);
-        uberResult = {
-            error: {
-                message: 'Unable to create uber order',
-                statusCode: 500,
-            }
-        };
-    }
-    return {
-        manitoulinResult,
-        uberResult,
-    }  
 }
 
-export async function createQuote(body) {
+async function createQuote(body) {
     const { destinationCity, destinationProvince, destinationZip, items }  = body;
     let manitoulinResult, uberResult;
     try {
@@ -87,4 +91,9 @@ export async function createQuote(body) {
         manitoulinResult,
         uberResult,
     }
+}
+
+export {
+    createQuote,
+    createOrder,
 }
