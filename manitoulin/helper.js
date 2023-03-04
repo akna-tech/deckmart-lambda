@@ -65,7 +65,7 @@ export function formatManitoulinQuoteItems (items) {
     const formattedItems = items.map(item => {
         item.class_value = getItemClass(item);
         item.weight_unit_value = 'KGS';
-        item.dimension_units = 'C';
+        item.unit_value = 'C';
         item.package_code_value = 'SK'
         item.total_weight = item.weight;
         item.description = 'test'; // TODO - get description from item

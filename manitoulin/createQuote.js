@@ -19,7 +19,7 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
   }
 
   const origin = {
-    city: "North York",
+    city: "NORTH YORK",
     province: "ON",
     postal_zip: "M9L1P9",
     residential_pickup: false,
@@ -72,9 +72,8 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
     };
   }
   catch (err) {
-    console.log(JSON.stringify(err))
     if (err.response.data && err.response.status) {
-      if (err.response.data === errorResponse.quoteNotFound) {
+      if (err.response.data[0] === errorResponse.quoteNotFound) {
         return {
           error: {
             message: 'Could not find rate quote',
@@ -82,7 +81,7 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
           }
         };
       }
-      if (err.response.data === errorResponse.wrongAddress) {
+      if (err.response.data[0] === errorResponse.wrongAddress) {
         return {
           error: {
             message: 'Invalid address',
