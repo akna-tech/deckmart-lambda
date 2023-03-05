@@ -1,33 +1,14 @@
-const axios = require('axios')
-const { manitoulin_username, manitoulin_password } = process.env
+const axios = require("axios");
+const { getManitoulinAuthToken } = require('./auth.js');
+const { formatManitoulinQuoteItems } = require('./helper.js');
 
 const errorResponse = {
   quoteNotFound: "Could not find rate quote",
   wrongAddress: "The Destination city or province/state cannot be found in our system. Please clear the page and attempt your search by city or postal/zip first. If you still encounter difficulty, please call 1-800-265-1485 for assistance with your rate quote.",
 }
 
-async function getAuthToken() {
-  const body = {
-    username: manitoulin_username,
-    password: manitoulin_password,
-    company: "MANITOULIN",
-  };
-  try {
-    const result = await axios({
-      method: "post",
-      url: "https://www.mtdirect.ca/api/users/auth",
-      data: body,
-    });
-    const { token } = result.data;
-    return token;
-  } catch (error) {
-    console.log("error getting auth", JSON.stringify(error));
-  }
-}
-
-exports.postQouting = async function(event, context) {
+async function createManitoulinQuote({ destinationCity, destinationProvince, destinationZip, items }) {
   // https://www.mtdirect.ca/documents/apis/onlineQuoting
-  const { destinationCity, destinationProvince, destinationZip, items } = event.body
   const contact = {
     name: "Alex",
     company: "DECKMART BUILDING SUPPLIES",
@@ -38,7 +19,7 @@ exports.postQouting = async function(event, context) {
   }
 
   const origin = {
-    city: "North York",
+    city: "NORTH YORK",
     province: "ON",
     postal_zip: "M9L1P9",
     residential_pickup: false,
@@ -60,28 +41,29 @@ exports.postQouting = async function(event, context) {
     dock_pickup: false,
   }
 
-  const body = {
+  const formattedItems = formatManitoulinQuoteItems(items)
+  const bodyParameters = {
     contact,
     origin,
     destination,
-    items,
+    items: formattedItems,
   }
 
-  const token = await getAuthToken()
+  const token = await getManitoulinAuthToken()
   const headers = {
     'Authorization': `Token ${token}` 
   }
 
   try {
-    const { data } = await axios.post(
+    const result = await axios.post(
       "https://www.mtdirect.ca/api/online_quoting/quote",
-      body,
+      bodyParameters,
       { headers }
     );
+    const { data } = result
     const { id, timestamp, quote, total_charge } = data
     return {
-      statusCode: 200,
-      body: { 
+      data: { 
         id,
         gen_date: timestamp,
         quote_num: quote,
@@ -91,30 +73,36 @@ exports.postQouting = async function(event, context) {
   }
   catch (err) {
     if (err.response.data && err.response.status) {
-      if (err.response.data === errorResponse.quoteNotFound) {
+      if (err.response.data[0] === errorResponse.quoteNotFound) {
         return {
-          body: 'Could not find rate quote',
-          statusCode: 204,
+          error: {
+            message: 'Could not find rate quote',
+            statusCode: 204,
+          }
         };
       }
-      if (err.response.data === errorResponse.wrongAddress) {
+      if (err.response.data[0] === errorResponse.wrongAddress) {
         return {
-          body: 'Invalid address',
-          statusCode: 406,
+          error: {
+            message: 'Invalid address',
+            statusCode: 406,
+          }
         };
       }
-      return {
-        body: err.response.data,
-        statusCode: err.response.status,
-      };
     }
     console.log(err.message)
     return {
-      body: "internal error",
-      statusCode: 500,
+      error: {
+        message: 'Unable to get Manitoulin quote',
+        statusCode: 500,
+      }
     };
   }
 };
+
+module.exports = {
+  createManitoulinQuote
+}
 
 // example request body
 // {
