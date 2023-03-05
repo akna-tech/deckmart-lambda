@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+    - AWS::Serverless-2016-10-31
+    - AWS::CodeStar
+
+
+Parameters:
+    m_account:
+        Type: String
+        Description: manitoulin account
+    m_company:
+        Type: String
+        Description: manitoulin company
+    m_password:
+        Type: String
+        Description: manitoulin password
+    m_username:
+        Type: String
+        Description: manitoulin username
+    
+
+
+Globals:
+    Function:
+        AutoPublishAlias: live
+        DeploymentPreference:
+            Enabled: true
+            Type: Canary10Percent5Minutes
+            Role: !Ref CodeDeployRole
+        Environment:
+            Variables:
+                manitoulin_account: !Ref m_account
+                manitoulin_company: !Ref m_company
+                manitoulin_password: !Ref m_password
+                manitoulin_username: !Ref m_username
+
+Resources:
+    # REST API
+    MyApi:
+        Type: AWS::Serverless::Api
+        Properties:
+            StageName: Prod
+    GetQuote:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: !Sub 'quote'
+            Handler: routes.quote
+            Runtime: nodejs16.x
+            Timeout: 100
+            Role:
+                Fn::GetAtt:
+                    - LambdaExecutionRole
+                    - Arn
+            Events:
+                GetEvent:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref MyApi
+                        Path: /quote
+                        Method: post
+    LambdaExecutionRole:
+        Description: Creating service role in IAM for AWS Lambda
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: !Sub 'CodeStar-${ProjectId}-Execution'
+            AssumeRolePolicyDocument:
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                          Service: [lambda.amazonaws.com]
+                      Action: sts:AssumeRole
+            Path: /
+            ManagedPolicyArns:
+                - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+

@@ -2,7 +2,7 @@ import ExcelJS from 'exceljs';
 
 async function readPriceListData() {
     const workbook = new ExcelJS.Workbook();
-    const filePath = 'file:///var/task/uber/pricelist.xlsx';
+    const filePath = './pricelist.xlsx';
     await workbook.xlsx.readFile(filePath);
 
     const worksheet = workbook.getWorksheet(1);

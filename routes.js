@@ -33,7 +33,7 @@ async function order (event, context) {
 }
 
 async function quote (event, context) {
-    const { body } = event;
+    const body = JSON.parse(event.body);
     const result = await createQuote(body);
     const { error: manitoulinError } = result.manitoulinResult;
     const { error: uberError } = result.uberResult;
