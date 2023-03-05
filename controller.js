@@ -6,52 +6,54 @@ const { createUberQuote } = require('./uber/createQuote.js');
 async function createOrder(body, service) {
     const {
         items,
-        consigneeCompany, 
-        consigneeContact,
-        consigneeAddress,
-        consigneeCity,
-        consigneeProvince,
-        consigneePostal,
+        destinationCompany, 
+        contactNumber,
+        destinationAddress,
+        destinationCity,
+        destinationProvince,
+        destinationZip,
+        deliveryDate,
+        deliveryTime,
     } = body;
-    let manitoulinResult, uberResult;
+
     if (service === 'manitoulin') {
         try {
-            manitoulinResult = await createManitoulinOrder({
+            const manitoulinResult = await createManitoulinOrder({
                 items,
-                consigneeCompany,
-                consigneeContact,
-                consigneeAddress,
-                consigneeCity,
-                consigneeProvince,
-                consigneePostal,
+                consigneeCompany: destinationCompany,
+                consigneeContact: contactNumber,
+                consigneeAddress: destinationAddress,
+                consigneeCity: destinationCity,
+                consigneeProvince: destinationProvince,
+                consigneePostal: destinationZip,
+                deliveryDate,
+                deliveryTime,
             });
             return manitoulinResult;
         }
         catch (err) {
             console.log(err.message);
-            manitoulinResult = {
-                error: {
+            return {
+                data: {
                     message: 'Unable to create manitoulin order',
-                    statusCode: 500,
-                }
+                },
+                statusCode: 500,
             };
-            return manitoulinResult;
         }
     }
     if (service === 'uber') {
         try {
-            uberResult = await createUberOrder({items});
+            const uberResult = await createUberOrder(items, destinationZip, deliveryDate, deliveryTime);
             return uberResult;
         }
         catch (err) {
             console.log(err.message);
-            uberResult = {
-                error: {
-                    message: 'Unable to create uber order',
-                    statusCode: 500,
-                }
+            return {
+                data: {
+                    message: 'Unable to create uber order'
+                },
+                statusCode: 500
             };
-            return uberResult;
         }
     }
 }

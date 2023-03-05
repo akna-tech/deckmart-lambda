@@ -50,12 +50,12 @@ function getItemClass (item) {
 function formatManitoulinOrderItems (items) {
     const formattedItems = items.map(item => {
         item.item_class = getItemClass(item);
-        item.total_weight = item.weight;
+        // item.total_weight = item.weight;
         item.weight_units = 'KG';
         item.dimension_units = 'CM';
         item.package_code = 'SKIDS';
-        delete item.weight;
         delete item.description;
+        delete item.price;
         return item;
     })
     return formattedItems;

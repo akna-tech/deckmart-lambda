@@ -11,6 +11,8 @@ async function createManitoulinOrder ({
   consigneeCity,
   consigneeProvince,
   consigneePostal,
+  deliveryDate,
+  deliveryTime,
 }) {
   const shipper = {
     company: "DECKMART BUILDING SUPPLIES",
@@ -32,27 +34,30 @@ async function createManitoulinOrder ({
     postal: consigneePostal.toUpperCase(),
   }
 
-  // pickup date is 1 day after now in the format YYYY-MM-DD
-  const pickupDate = new Date();
-  pickupDate.setDate(pickupDate.getDate() + 1);
-  const pickupDateFormatted = pickupDate.toISOString().split("T")[0];
-  const readyTime = '10:00';
-  const closingTime = '17:00';
+  const deliveryTimeHours = parseInt(deliveryTime.split(':')[0]);
+  const deliveryTimeMinutes = parseInt(deliveryTime.split(':')[1]);
+  const deliveryTimeStamp = new Date().setHours(deliveryTimeHours, deliveryTimeMinutes);
 
-  const fomrattedItems = formatManitoulinOrderItems(items);
+  const openingTimeStamp = Math.round(deliveryTimeStamp / 900000) * 900000;
+  const openingTimeWithSeconds = new Date(openingTimeStamp).toTimeString().split(' ')[0]
+  const openingTime = openingTimeWithSeconds.split(':')[0] + ':' + openingTimeWithSeconds.split(':')[1]
+
+  const closingTimeStamp = openingTimeStamp + 1800000;
+  const closingTimeWithSeconds = new Date(closingTimeStamp).toTimeString().split(' ')[0]
+  const closingTime = closingTimeWithSeconds.split(':')[0] + ':' + closingTimeWithSeconds.split(':')[1]
+
+  const formattedItems = formatManitoulinOrderItems(items);
 
   const body = {
     requester: 'Shipper',
     shipper,
     consignee,
-    items: fomrattedItems,
+    items: formattedItems,
     description: 'test', // TODO update before release
-    pickup_date: pickupDateFormatted, // TODO check date and time logic
-    ready_time: readyTime,
+    pickup_date: deliveryDate,
+    ready_time: openingTime,
     closing_time: closingTime,
-    guaranteed_service: true,
-    guaranteed_option: 'By noon',
-    special_delivery_instruction: 'this is a test!!!',
+    guaranteed_service: false,
     freight_charge_party: 'Prepaid',
     confirm_pickup_receipt: false,
   }
@@ -62,6 +67,8 @@ async function createManitoulinOrder ({
     Authorization: `Token ${token}`,
   };
   try {
+    // TODO add stripe payment logic here
+    
     const { data } = await axios.post(
       "https://www.mtdirect.ca/api/online_pickup/submit",
       body,
@@ -70,28 +77,27 @@ async function createManitoulinOrder ({
 
     const { punum } = data;
     return {
-      data: {
-        punum,
-        pickup_date: pickupDateFormatted,
-        closingTime,
-        readyTime
-      }
+      data : {
+        message: 'Successfully created manitoulin order',
+        pickupNumber: punum,
+      },
+      statusCode: 200,
     };
   } catch (err) {
     if (err.response.data && err.response.status) {
       return {
-        error: {
+        data: {
           message: err.response.data,
-          statusCode: err.response.status,
-        }    
+        },
+        statusCode: err.response.status,
       };
     }
     console.log(err.message)
     return {
-      error: {
+      data: {
         message: 'Unable to create manitoulin order',
-        statusCode: 500,
-      }    
+      },
+      statusCode: 500,
     };
   }
 };

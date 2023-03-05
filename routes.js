@@ -1,35 +1,25 @@
 const { createOrder, createQuote } = require('./controller.js')
 
 async function order (event, context) {
-    const { body } = event;
-    const { service } = event.queryStringParameters;
-    const result = await createOrder(body, service);
-    if (!result) {
+    try {
+        const body = JSON.parse(event.body);
+        const { service } = event.queryStringParameters;
+        const result = await createOrder(body, service.toLowerCase());
+        return {
+            statusCode: result.statusCode,
+            body: JSON.stringify(result.data),
+        };
+    }
+    catch (error) {
         return {
             statusCode: 500,
             body: JSON.stringify({
                 error: {
-                    message: 'Unable to create order',
-                    statusCode: 500,
+                    message: 'Unable to create order'
                 }
             }),
         };
     }
-    const { error } = result;
-    if (error) {
-        return {
-            statusCode: error.statusCode || 500,
-            body: JSON.stringify({
-                error: {
-                    message: error.message || 'Unable to create order',
-                }
-            }),
-        };
-    }
-    return {
-        statusCode: 200,
-        body: JSON.stringify(result),
-    };
 }
 
 async function quote (event, context) {
