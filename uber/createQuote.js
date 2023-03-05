@@ -1,6 +1,6 @@
 import { getPriceListByPostalCode, isDeliveryTimeAcceptable } from './helper.js';
 
-export async function createUberOrder (items, destinationZip, deliveryDate, deliveryTime) {
+export async function createUberQuote (items, destinationZip, deliveryDate, deliveryTime) {
     const zip3Letter = destinationZip.slice(0, 3);
     const postalCodeToPriceMap = await getPriceListByPostalCode(zip3Letter);
     

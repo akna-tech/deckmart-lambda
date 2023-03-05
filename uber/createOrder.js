@@ -1,7 +1,4 @@
-import { validateUberItems } from './helper.js';
-
 export async function createUberOrder (items) {
-    const { error, data } = validateUberItems(items);
     if (error) {
         return error;
     }

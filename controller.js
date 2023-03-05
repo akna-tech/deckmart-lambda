@@ -80,6 +80,8 @@ async function createQuote(body) {
         uberResult = await createUberQuote(items, destinationZip, deliveryDate, deliveryTime );
     }
     catch (err) {
+        console.log(err);
+        console.log('json: ', JSON.stringify(err));
         uberResult = {
             error: {
                 message: 'Unable to create uber quote',
