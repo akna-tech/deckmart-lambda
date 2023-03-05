@@ -57,7 +57,7 @@ async function createOrder(body, service) {
 }
 
 async function createQuote(body) {
-    const { destinationCity, destinationProvince, destinationZip, items }  = body;
+    const { destinationCity, destinationProvince, destinationZip, items, deliveryDate, deliveryTime }  = body;
     let manitoulinResult, uberResult;
     try {
         manitoulinResult = await createManitoulinQuote({
@@ -77,7 +77,7 @@ async function createQuote(body) {
         };
     }
     try {
-        uberResult = await createUberQuote(items);
+        uberResult = await createUberQuote(items, destinationZip, deliveryDate, deliveryTime );
     }
     catch (err) {
         uberResult = {
