@@ -1,9 +1,9 @@
-import axios from "axios";
-import { getManitoulinAuthToken } from './auth.js';
-import { formatManitoulinOrderItems } from './helper.js';
+const axios = require("axios");
+const { getManitoulinAuthToken } = require('./auth.js');
+const { formatManitoulinOrderItems } = require('./helper.js');
 
 // https://www.mtdirect.ca/documents/apis/onlinePickup
-export async function createManitoulinOrder ({ 
+async function createManitoulinOrder ({ 
   items,
   consigneeCompany, 
   consigneeContact,
@@ -95,6 +95,10 @@ export async function createManitoulinOrder ({
     };
   }
 };
+
+module.exports = {
+  createManitoulinOrder,
+}
 
 // example request body
 // {

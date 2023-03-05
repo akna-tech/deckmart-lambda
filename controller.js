@@ -1,7 +1,7 @@
-import { createManitoulinOrder } from './manitoulin/createOrder.js';
-import { createUberOrder } from './uber/createOrder.js';
-import { createManitoulinQuote } from './manitoulin/createQuote.js';
-import { createUberQuote } from './uber/createQuote.js';
+const { createManitoulinOrder } = require('./manitoulin/createOrder.js');
+const { createUberOrder } = require('./uber/createOrder.js');
+const { createManitoulinQuote } = require('./manitoulin/createQuote.js');
+const { createUberQuote } = require('./uber/createQuote.js');
 
 async function createOrder(body, service) {
     const {
@@ -68,7 +68,6 @@ async function createQuote(body) {
         });
     }
     catch (err) {
-        console.log(err.message);
         manitoulinResult = {
             error: {
                 message: 'Unable to create manitoulin quote',
@@ -81,7 +80,6 @@ async function createQuote(body) {
     }
     catch (err) {
         console.log(err);
-        console.log('json: ', JSON.stringify(err));
         uberResult = {
             error: {
                 message: 'Unable to create uber quote',
@@ -95,7 +93,7 @@ async function createQuote(body) {
     }
 }
 
-export {
+module.exports = {
     createQuote,
     createOrder,
 }

@@ -1,13 +1,13 @@
-import axios from "axios";
-import { getManitoulinAuthToken } from './auth.js';
-import { formatManitoulinQuoteItems } from './helper.js';
+const axios = require("axios");
+const { getManitoulinAuthToken } = require('./auth.js');
+const { formatManitoulinQuoteItems } = require('./helper.js');
 
 const errorResponse = {
   quoteNotFound: "Could not find rate quote",
   wrongAddress: "The Destination city or province/state cannot be found in our system. Please clear the page and attempt your search by city or postal/zip first. If you still encounter difficulty, please call 1-800-265-1485 for assistance with your rate quote.",
 }
 
-export async function createManitoulinQuote({ destinationCity, destinationProvince, destinationZip, items }) {
+async function createManitoulinQuote({ destinationCity, destinationProvince, destinationZip, items }) {
   // https://www.mtdirect.ca/documents/apis/onlineQuoting
   const contact = {
     name: "Alex",
@@ -42,7 +42,7 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
   }
 
   const formattedItems = formatManitoulinQuoteItems(items)
-  const body = {
+  const bodyParameters = {
     contact,
     origin,
     destination,
@@ -57,7 +57,7 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
   try {
     const result = await axios.post(
       "https://www.mtdirect.ca/api/online_quoting/quote",
-      body,
+      bodyParameters,
       { headers }
     );
     const { data } = result
@@ -99,6 +99,10 @@ export async function createManitoulinQuote({ destinationCity, destinationProvin
     };
   }
 };
+
+module.exports = {
+  createManitoulinQuote
+}
 
 // example request body
 // {

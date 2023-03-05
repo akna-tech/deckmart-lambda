@@ -1,4 +1,4 @@
-import { createOrder, createQuote } from './controller.js'
+const { createOrder, createQuote } = require('./controller.js')
 
 async function order (event, context) {
     const { body } = event;
@@ -44,7 +44,7 @@ async function quote (event, context) {
     };
 }
 
-export {
+module.exports = {
     order,
     quote
 }

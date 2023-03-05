@@ -47,7 +47,7 @@ function getItemClass (item) {
     }
 }
 
-export function formatManitoulinOrderItems (items) {
+function formatManitoulinOrderItems (items) {
     const formattedItems = items.map(item => {
         item.item_class = getItemClass(item);
         item.total_weight = item.weight;
@@ -61,18 +61,27 @@ export function formatManitoulinOrderItems (items) {
     return formattedItems;
 }
 
-export function formatManitoulinQuoteItems (items) {
+function formatManitoulinQuoteItems (items) {
     const formattedItems = items.map(item => {
-        item.class_value = getItemClass(item);
-        item.weight_unit_value = 'KGS';
-        item.unit_value = 'C';
-        item.package_code_value = 'SK'
-        item.total_weight = item.weight;
-        item.description = 'test'; // TODO - get description from item
-        delete item.weight;
-        return item;
+        return {
+            class_value: getItemClass(item),
+            pieces: item.pieces,
+            package_code_value: 'SK',
+            description: item.description,
+            length: item.length,
+            width: item.width,
+            height: item.height,
+            total_weight: item.weight,
+            weight_unit_value: 'KGS',
+            unit_value: 'C',
+        }
     })
     return formattedItems;
+}
+
+module.exports = {
+    formatManitoulinOrderItems,
+    formatManitoulinQuoteItems,
 }
 
 // items example

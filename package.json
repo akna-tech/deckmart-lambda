@@ -12,6 +12,5 @@
     "axios": "^1.1.3",
     "canadapost-api": "^1.2.0",
     "exceljs": "^4.3.0"
-  },
-  "type": "module"
+  }
 }

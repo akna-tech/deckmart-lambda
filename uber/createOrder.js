@@ -1,4 +1,4 @@
-export async function createUberOrder (items) {
+async function createUberOrder (items) {
     if (error) {
         return error;
     }
@@ -8,4 +8,8 @@ export async function createUberOrder (items) {
             message: 'Valid Uber items'
         }
     };
+}
+
+module.exports = {
+    createUberOrder,
 }

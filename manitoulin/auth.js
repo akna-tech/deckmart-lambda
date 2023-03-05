@@ -1,7 +1,7 @@
 const { manitoulin_username, manitoulin_password } = process.env;
-import axios from "axios";
+const axios = require("axios");
 
-export async function getManitoulinAuthToken() {
+async function getManitoulinAuthToken() {
     const body = {
       username: manitoulin_username,
       password: manitoulin_password,
@@ -19,4 +19,8 @@ export async function getManitoulinAuthToken() {
       console.log("error getting auth", error);
       throw new Error('Unable to get Manitoulin token');
     }
+}
+
+module.exports = {
+  getManitoulinAuthToken
 }

@@ -1,8 +1,8 @@
-import ExcelJS from 'exceljs';
+const ExcelJS = require('exceljs');
 
 async function readPriceListData() {
     const workbook = new ExcelJS.Workbook();
-    const filePath = './pricelist.xlsx';
+    const filePath = `${__dirname}/pricelist.xlsx`;
     await workbook.xlsx.readFile(filePath);
 
     const worksheet = workbook.getWorksheet(1);
@@ -34,7 +34,7 @@ async function readPriceListData() {
     return postalCodeToPriceMap;
 }
 
-export async function getPriceListByPostalCode(postalCode) {
+async function getPriceListByPostalCode(postalCode) {
     const postalCodeToPriceMap = await readPriceListData();
     if (!postalCodeToPriceMap[postalCode]) {
         throw new Error('Postal code not found');
@@ -42,7 +42,7 @@ export async function getPriceListByPostalCode(postalCode) {
     return postalCodeToPriceMap[postalCode];
 }
 
-export function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
+function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
     const today = new Date();
     const deliveryDateObj = new Date(deliveryDate);
     const isToday = today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() === deliveryDateObj.getMonth() && today.getDate() === deliveryDateObj.getDate();
@@ -65,4 +65,9 @@ export function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) 
         throw new Error('Delivery date cannot be in the past');
     }
     return true
+}
+
+module.exports = {
+    getPriceListByPostalCode,
+    isDeliveryTimeAcceptable,
 }
