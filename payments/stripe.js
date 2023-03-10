@@ -4,7 +4,7 @@ export const checkout = async(product) => {
         line_items: [ 
         { 
             price_data: { 
-            currency: "usd", 
+            currency: "cad", 
             product_data: { 
                 name: product.name, 
             }, 
@@ -20,14 +20,14 @@ export const checkout = async(product) => {
     return { id: session.id }; 
 }
 
-export const paymentIntent = async() => {
+export const paymentIntent = async(amount) => {
     const stripe = require('stripe')(process.env.STRIPE_KEY);
     const paymentIntent = await stripe.paymentIntents.create({
-        amount: 1099,
-        currency: 'usd',
+        amount,
+        currency: 'cad',
     });
     const clientSecret = paymentIntent.client_secret;
-    // Pass the client secret to the client
+    return clientSecret;
 }
 
 export const paymentIntentWebhook = async (type, data) => {  

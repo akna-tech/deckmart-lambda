@@ -112,8 +112,9 @@ async function createCheckout(body) {
 }
 
 async function createPaymentIntent(body) {
+    const { amount } = body;
     try {
-        return await paymentIntent();
+        return await paymentIntent(amount);
     }
     catch (err) {
         return {
