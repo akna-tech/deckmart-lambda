@@ -17,7 +17,9 @@ Parameters:
     m_username:
         Type: String
         Description: manitoulin username
-    
+    StripeKey:
+        Type: String
+        Description: manitoulin username
 
 
 Globals:
@@ -33,6 +35,7 @@ Globals:
                 manitoulin_company: !Ref m_company
                 manitoulin_password: !Ref m_password
                 manitoulin_username: !Ref m_username
+                STRIPE_KEY: !Ref StripeKey
 
 Resources:
     # REST API

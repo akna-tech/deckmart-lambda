@@ -2,6 +2,7 @@ const { createManitoulinOrder } = require('./manitoulin/createOrder.js');
 const { createUberOrder } = require('./uber/createOrder.js');
 const { createManitoulinQuote } = require('./manitoulin/createQuote.js');
 const { createUberQuote } = require('./uber/createQuote.js');
+const { checkout, paymentIntent, paymentIntentWebhook } = require('./payments/stripe.js')
 
 async function createOrder(body, service) {
     const {
@@ -95,7 +96,54 @@ async function createQuote(body) {
     }
 }
 
+async function createCheckout(body) {
+    const { product } = body;
+    try {
+        return await createCheckout(product);
+    }
+    catch (err) {
+        return {
+            error: {
+                message: 'Unable to create checkout',
+                statusCode: 500,
+            }
+        };
+    }
+}
+
+async function createPaymentIntent(body) {
+    try {
+        return await paymentIntent();
+    }
+    catch (err) {
+        return {
+            error: {
+                message: 'Unable to create payment intent',
+                statusCode: 500,
+            }
+        };
+    }
+}
+
+async function handlePaymentIntentWebhook(body) {
+    const { type, data } = body;
+    try {
+        return await paymentIntentWebhook(type, data);
+    }
+    catch (err) {
+        return {
+            error: {
+                message: 'Payment intent webhook failed',
+                statusCode: 500,
+            }
+        };
+    }
+}
+
 module.exports = {
     createQuote,
     createOrder,
+    createCheckout,
+    createPaymentIntent,
+    handlePaymentIntentWebhook,
 }
