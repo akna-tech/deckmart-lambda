@@ -23,7 +23,7 @@ export const checkout = async(product) => {
 export const paymentIntent = async(amount) => {
     const stripe = require('stripe')(process.env.STRIPE_KEY);
     const paymentIntent = await stripe.paymentIntents.create({
-        amount,
+        amount: amount * 100,
         currency: 'cad',
     });
     const clientSecret = paymentIntent.client_secret;
