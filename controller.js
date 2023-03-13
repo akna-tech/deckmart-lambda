@@ -1,6 +1,6 @@
 const { createManitoulinOrder } = require('./manitoulin/createOrder.js');
 const { createUberOrder } = require('./uber/createOrder.js');
-const { createGotoOrder } = require("./gofor/createOrder.js");
+const { createGoforOrder } = require("./gofor/createOrder.js");
 const { createManitoulinQuote } = require('./manitoulin/createQuote.js');
 const { createUberQuote } = require('./uber/createQuote.js');
 const { createGoforQuote } = require("./gofor/createQuote.js");
@@ -64,7 +64,7 @@ async function createOrder(body, service) {
   }
   if (service === "gofor") {
     try {
-      const goforResult = await createGotoOrder({
+      const goforResult = await createGoforOrder({
         items,
         destinationCompany,
         contactNumber,
@@ -98,62 +98,40 @@ async function createQuote(body) {
     items,
     deliveryDate,
     deliveryTime,
+    clientName,
+    orderNumber
   } = body;
-  let manitoulinResult, uberResult, goforResult;
-  try {
-    manitoulinResult = await createManitoulinQuote({
-      destinationCity,
-      destinationProvince,
-      destinationZip,
-      items,
-    });
-  } catch (err) {
-    manitoulinResult = {
-      error: {
-        message: "Unable to create manitoulin quote",
-        statusCode: 500,
-      },
-    };
-  }
-  try {
-    uberResult = await createUberQuote(
-      items,
-      destinationZip,
-      deliveryDate,
-      deliveryTime
-    );
-  } catch (err) {
-    console.log(err);
-    uberResult = {
-      error: {
-        message: "Unable to create uber quote",
-        statusCode: 500,
-      },
-    };
-  }
-  try {
-    goforResult = await createGoforQuote({
-      destinationCity,
-      destinationProvince,
-      destinationZip,
-      destinationAddress,
-      contactNumber,
-      items,
-      deliveryDate,
-      deliveryTime,
-    });
-  } catch (err) {
-    goforResult = {
-      error: {
-        message: "Unable to get gofor quote",
-        statusCode: 500,
-      },
-    };
-  }
+
+  const manitoulinResult = await createManitoulinQuote({
+    destinationCity,
+    destinationProvince,
+    destinationZip,
+    items,
+  });
+
+  const uberResult = await createUberQuote(
+    items,
+    destinationZip,
+    deliveryDate,
+    deliveryTime
+  );
+
+  const goforResult = await createGoforQuote({
+    destinationCity,
+    destinationProvince,
+    destinationZip,
+    destinationAddress,
+    contactNumber,
+    items,
+    deliveryDate,
+    deliveryTime,
+    clientName,
+    orderNumber,
+  });
+  const quotes = [manitoulinResult, uberResult, goforResult];
+
   return {
-    manitoulinResult,
-    uberResult,
-    goforResult,
+    quotes,
   };
 }
 

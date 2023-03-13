@@ -24,14 +24,25 @@ async function order (event, context) {
 
 async function quote (event, context) {
     const body = JSON.parse(event.body);
-    const result = await createQuote(body);
-    const { error: manitoulinError } = result.manitoulinResult;
-    const { error: uberError } = result.uberResult;
-    const statusCode = manitoulinError && uberError ? 500 : 200;
-    return {
-        statusCode,
-        body: JSON.stringify(result),
-    };
+    try {
+        const result = await createQuote(body);
+        return {
+            statusCode: 200,
+            body: JSON.stringify(result),
+        };
+    }
+    catch (error) {
+        console.log('Error in quote route: ', error.message || 'Unknown error')
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                error: {
+                    message: 'Internal error'
+                }
+            }),
+        };
+    }
+    
 }
 
 async function checkout (event) {
