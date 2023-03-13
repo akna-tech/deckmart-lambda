@@ -63,7 +63,6 @@ async function paymentIntent (event) {
 async function paymentIntentWebhook (event) {
     const body = JSON.parse(event.body);
     console.log('Body is: ', body);
-    const event = event.body;
     const result = await createQuote(body);
     const { error } = result;
     const statusCode = error ? 500 : 200;
