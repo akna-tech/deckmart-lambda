@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { getAuthToken, formatDate } = require("./helper");
 
-async function createGotoOrder({
+async function createGoforOrder({
     contactNumber,
     destinationAddress,
     destinationCity,
@@ -117,4 +117,4 @@ async function createGotoOrder({
     }
   }
 
-module.exports = { createGotoOrder };
+module.exports = { createGoforOrder };
