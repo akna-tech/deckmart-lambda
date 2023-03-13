@@ -17,6 +17,21 @@ Parameters:
     m_username:
         Type: String
         Description: manitoulin username
+    gofor_username:
+        Type: String
+        Description: gofor username
+    gofor_password:
+        Type: String
+        Description: gofor password
+    gofor_token_url:
+        Type: String
+        Description: gofor token url
+    gofor_quote_url:
+        Type: String
+        Description: gofor quote url
+    gofor_order_url:
+        Type: String
+        Description: gofor order url
     
 
 
@@ -33,7 +48,11 @@ Globals:
                 manitoulin_company: !Ref m_company
                 manitoulin_password: !Ref m_password
                 manitoulin_username: !Ref m_username
-
+                GOFOR_USERNAME: !Ref gofor_username
+                GOFOR_PASSWORD: !Ref gofor_password
+                GOFOR_TOKEN_URL: !Ref gofor_token_url
+                GOFOR_QUOTE_URL: !Ref gofor_quote_url
+                GOFOR_ORDER_URL: !Ref gofor_order_url
 Resources:
     # REST API
     MyApi:

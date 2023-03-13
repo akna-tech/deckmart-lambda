@@ -1,12 +1,71 @@
-const { createManitoulinOrder } = require('./manitoulin/createOrder.js');
-const { createUberOrder } = require('./uber/createOrder.js');
-const { createManitoulinQuote } = require('./manitoulin/createQuote.js');
-const { createUberQuote } = require('./uber/createQuote.js');
+const { createManitoulinOrder } = require("./manitoulin/createOrder.js");
+const { createUberOrder } = require("./uber/createOrder.js");
+const { createGotoOrder } = require("./gofor/createOrder.js");
+const { createManitoulinQuote } = require("./manitoulin/createQuote.js");
+const { createUberQuote } = require("./uber/createQuote.js");
+const { createGoforQuote } = require("./gofor/createQuote.js");
 
 async function createOrder(body, service) {
-    const {
+  const {
+    items,
+    destinationCompany,
+    contactNumber,
+    destinationAddress,
+    destinationCity,
+    destinationProvince,
+    destinationZip,
+    deliveryDate,
+    deliveryTime,
+  } = body;
+
+  if (service === "manitoulin") {
+    try {
+      const manitoulinResult = await createManitoulinOrder({
         items,
-        destinationCompany, 
+        consigneeCompany: destinationCompany,
+        consigneeContact: contactNumber,
+        consigneeAddress: destinationAddress,
+        consigneeCity: destinationCity,
+        consigneeProvince: destinationProvince,
+        consigneePostal: destinationZip,
+        deliveryDate,
+        deliveryTime,
+      });
+      return manitoulinResult;
+    } catch (err) {
+      console.log(err.message);
+      return {
+        data: {
+          message: "Unable to create manitoulin order",
+        },
+        statusCode: 500,
+      };
+    }
+  }
+  if (service === "uber") {
+    try {
+      const uberResult = await createUberOrder(
+        items,
+        destinationZip,
+        deliveryDate,
+        deliveryTime
+      );
+      return uberResult;
+    } catch (err) {
+      console.log(err.message);
+      return {
+        data: {
+          message: "Unable to create uber order",
+        },
+        statusCode: 500,
+      };
+    }
+  }
+  if (service === "gofor") {
+    try {
+      const goforResult = await createGotoOrder({
+        items,
+        destinationCompany,
         contactNumber,
         destinationAddress,
         destinationCity,
@@ -14,88 +73,90 @@ async function createOrder(body, service) {
         destinationZip,
         deliveryDate,
         deliveryTime,
-    } = body;
-
-    if (service === 'manitoulin') {
-        try {
-            const manitoulinResult = await createManitoulinOrder({
-                items,
-                consigneeCompany: destinationCompany,
-                consigneeContact: contactNumber,
-                consigneeAddress: destinationAddress,
-                consigneeCity: destinationCity,
-                consigneeProvince: destinationProvince,
-                consigneePostal: destinationZip,
-                deliveryDate,
-                deliveryTime,
-            });
-            return manitoulinResult;
-        }
-        catch (err) {
-            console.log(err.message);
-            return {
-                data: {
-                    message: 'Unable to create manitoulin order',
-                },
-                statusCode: 500,
-            };
-        }
+      });
+      return goforResult;
+    } catch (err) {
+      console.log(err.message);
+      return {
+        data: {
+          message: "Unable to create gofor order",
+        },
+        statusCode: 500,
+      };
     }
-    if (service === 'uber') {
-        try {
-            const uberResult = await createUberOrder(items, destinationZip, deliveryDate, deliveryTime);
-            return uberResult;
-        }
-        catch (err) {
-            console.log(err.message);
-            return {
-                data: {
-                    message: 'Unable to create uber order'
-                },
-                statusCode: 500
-            };
-        }
-    }
+  }
 }
 
 async function createQuote(body) {
-    const { destinationCity, destinationProvince, destinationZip, items, deliveryDate, deliveryTime }  = body;
-    let manitoulinResult, uberResult;
-    try {
-        manitoulinResult = await createManitoulinQuote({
-            destinationCity,
-            destinationProvince,
-            destinationZip,
-            items,
-        });
-    }
-    catch (err) {
-        manitoulinResult = {
-            error: {
-                message: 'Unable to create manitoulin quote',
-                statusCode: 500,
-            }
-        };
-    }
-    try {
-        uberResult = await createUberQuote(items, destinationZip, deliveryDate, deliveryTime );
-    }
-    catch (err) {
-        console.log(err);
-        uberResult = {
-            error: {
-                message: 'Unable to create uber quote',
-                statusCode: 500,
-            }
-        };
-    }
-    return {
-        manitoulinResult,
-        uberResult,
-    }
+  const {
+    destinationCity,
+    destinationProvince,
+    destinationZip,
+    destinationAddress,
+    contactNumber,
+    items,
+    deliveryDate,
+    deliveryTime,
+  } = body;
+  let manitoulinResult, uberResult, goforResult;
+  try {
+    manitoulinResult = await createManitoulinQuote({
+      destinationCity,
+      destinationProvince,
+      destinationZip,
+      items,
+    });
+  } catch (err) {
+    manitoulinResult = {
+      error: {
+        message: "Unable to create manitoulin quote",
+        statusCode: 500,
+      },
+    };
+  }
+  try {
+    uberResult = await createUberQuote(
+      items,
+      destinationZip,
+      deliveryDate,
+      deliveryTime
+    );
+  } catch (err) {
+    console.log(err);
+    uberResult = {
+      error: {
+        message: "Unable to create uber quote",
+        statusCode: 500,
+      },
+    };
+  }
+  try {
+    goforResult = await createGoforQuote({
+      destinationCity,
+      destinationProvince,
+      destinationZip,
+      destinationAddress,
+      contactNumber,
+      items,
+      deliveryDate,
+      deliveryTime,
+    });
+  } catch (err) {
+    goforResult = {
+      error: {
+        message: "Unable to get gofor quote",
+        statusCode: 500,
+      },
+    };
+  }
+  return {
+    manitoulinResult,
+    uberResult,
+    goforResult,
+  };
 }
 
 module.exports = {
-    createQuote,
-    createOrder,
-}
+  createQuote,
+  createOrder,
+};
