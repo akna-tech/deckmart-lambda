@@ -1,4 +1,4 @@
-const { createOrder, createQuote, createCheckout,  } = require('./controller.js')
+const { createOrder, createQuote, createCheckout, createPaymentIntent, handlePaymentIntentWebhook } = require('./controller.js')
 
 async function order (event, context) {
     try {
@@ -34,7 +34,7 @@ async function quote (event, context) {
     };
 }
 
-async function checkout (event) {
+async function checkout (event, context) {
     const body = JSON.parse(event.body);
     console.log('Body is: ', body);
     const result = await createCheckout(body);
@@ -47,10 +47,10 @@ async function checkout (event) {
     };
 }
 
-async function paymentIntent (event) {
+async function paymentIntent (event, context) {
     const body = JSON.parse(event.body);
     console.log('Body is: ', body);
-    const result = await createQuote(body);
+    const result = await createPaymentIntent(body);
     const { error } = result;
     const statusCode = error ? 500 : 200;
     console.log('Result is: ', result);
@@ -60,11 +60,11 @@ async function paymentIntent (event) {
     };
 }
 
-async function paymentIntentWebhook (event) {
+async function paymentIntentWebhook (event, context) {
     const body = JSON.parse(event.body);
     console.log('Body is: ', body);
     const event = event.body;
-    const result = await createQuote(body);
+    const result = await handlePaymentIntentWebhook(body);
     const { error } = result;
     const statusCode = error ? 500 : 200;
     console.log('Result is: ', result);

@@ -99,7 +99,7 @@ async function createQuote(body) {
 async function createCheckout(body) {
     const { product } = body;
     try {
-        return await createCheckout(product);
+        return await checkout(product);
     }
     catch (err) {
         return {
