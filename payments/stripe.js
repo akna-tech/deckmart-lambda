@@ -1,4 +1,4 @@
-export const checkout = async(product) => {
+const checkout = async(product) => {
     const session = await stripe.checkout.sessions.create({ 
         payment_method_types: ["card"], 
         line_items: [ 
@@ -20,7 +20,7 @@ export const checkout = async(product) => {
     return { id: session.id }; 
 }
 
-export const paymentIntent = async(amount) => {
+const paymentIntent = async(amount) => {
     const stripe = require('stripe')(process.env.STRIPE_KEY);
     const paymentIntent = await stripe.paymentIntents.create({
         amount: amount * 100,
@@ -30,7 +30,7 @@ export const paymentIntent = async(amount) => {
     return clientSecret;
 }
 
-export const paymentIntentWebhook = async (type, data) => {  
+const paymentIntentWebhook = async (type, data) => {  
     // Handle the event
     switch (type) {
       case 'payment_intent.succeeded':
@@ -48,4 +48,10 @@ export const paymentIntentWebhook = async (type, data) => {
   
     // Return a 200 response to acknowledge receipt of the event
     return {received: true};
+}
+
+module.exports = {
+    checkout,
+    paymentIntent,
+    paymentIntentWebhook
 }
