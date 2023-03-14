@@ -23,7 +23,6 @@ async function order (event, context) {
 }
 
 async function quote (event, context) {
-    const body = JSON.parse(event.body);
     try {
         const result = await createQuote(body);
         return {

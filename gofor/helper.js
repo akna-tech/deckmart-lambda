@@ -26,41 +26,70 @@ async function getAuthToken() {
 }
 
 function formatDate(deliveryDate, deliveryTime) {
-    try {
-      let startDate = new Date(`${deliveryDate} ${deliveryTime}`);
-      const endDateString = new Date(startDate.setHours(startDate.getHours() + 1));
-      const endYear = endDateString.getFullYear();
-      let endMonth = endDateString.getMonth() + 1;
-      endMonth = ("0" + endMonth).slice(-2);
-      let endDay = endDateString.getDate();
-      endDay = ("0" + endDay).slice(-2);
-      let endHour = endDateString.getHours(); 
-      endHour = ("0" + endHour).slice(-2);
-      let endMinute = endDateString.getMinutes();
-      endMinute = ("0" + endMinute).slice(-2);
+  try {
+    let startDate = new Date(`${deliveryDate} ${deliveryTime}`);
+    const endDateString = new Date(
+      startDate.setHours(startDate.getHours() + 1)
+    );
+    const endYear = endDateString.getFullYear();
+    let endMonth = endDateString.getMonth() + 1;
+    endMonth = ("0" + endMonth).slice(-2);
+    let endDay = endDateString.getDate();
+    endDay = ("0" + endDay).slice(-2);
+    let endHour = endDateString.getHours();
+    endHour = ("0" + endHour).slice(-2);
+    let endMinute = endDateString.getMinutes();
+    endMinute = ("0" + endMinute).slice(-2);
 
-      startDate = `${deliveryDate} ${deliveryTime}`
-      const endDate = `${endYear}-${endMonth}-${endDay} ${endHour}:${endMinute}`;
-      return { startDate, endDate };
-    }
-    catch (err) {
-        console.log(err);
-    }
+    startDate = `${deliveryDate} ${deliveryTime}`;
+    const endDate = `${endYear}-${endMonth}-${endDay} ${endHour}:${endMinute}`;
+    return { startDate, endDate };
+  } catch (err) {
+    console.log(err);
+  }
+}
 
-//   let endDate = new Date()
-//     .toISOString()
-//     .replace(/T/, " ") // replace T with a space
-//     .replace(/\..+/, ""); // delete the dot and everything after
-//   endDate = endDate.substring(0, endDate.length - 3);
-//   let startDate = new Date()
-//     .toISOString()
-//     .replace(/T/, " ") // replace T with a space
-//     .replace(/\..+/, ""); // delete the dot and everything after
-//   startDate = startDate.substring(0, startDate.length - 3);
+function pickVehicle(items) {
+  const maxItemMeasuresInCmAndKg = items.reduce((measures, item) => {
+    measures.maxLength = Math.max(measures.maxLength, item.length);
+    measures.maxWidth = Math.max(measures.maxWidth, item.width);
+    measures.maxHeight = Math.max(measures.maxHeight, item.height);
+    measures.maxWeight = Math.max(measures.maxWeight, item.weight);
+    measures.totalWeight += item.weight;
+    return measures;
+  }, {
+    maxLength: 0,
+    maxWidth: 0,
+    maxHeight: 0,
+    maxWeight: 0,
+    totalWeight: 0,
+  });
 
+  const maxItemMeasures = {
+    maxLength: maxItemMeasuresInCmAndKg.maxLength / 30.48,
+    maxWidth: maxItemMeasuresInCmAndKg.maxWidth / 30.48,
+    maxHeight: maxItemMeasuresInCmAndKg.maxHeight / 30.48,
+    maxWeight: maxItemMeasuresInCmAndKg.maxWeight * 2.20462,
+    totalWeight: maxItemMeasuresInCmAndKg.totalWeight * 2.20462,
+  };
+
+  switch (true) {
+    case maxItemMeasures.maxLength <= 3 && maxItemMeasures.maxWidth <= 3 && maxItemMeasures.maxHeight <= 2 && maxItemMeasures.maxWeight <= 50 && maxItemMeasures.totalWeight <= 250:
+      return "16";
+    case maxItemMeasures.maxLength <= 10 && maxItemMeasures.maxWidth <= 3.75 && maxItemMeasures.maxHeight <= 4 && maxItemMeasures.maxWeight <= 60 && maxItemMeasures.totalWeight <= 2000:
+      return "1";
+    case maxItemMeasures.maxLength <= 14 && maxItemMeasures.maxWidth <= 5 && maxItemMeasures.maxHeight <= 6 && maxItemMeasures.maxWeight <= 150 && maxItemMeasures.totalWeight <= 3500:
+      return "17";
+    // TODO uncomment when this is also available vehicle
+    // case maxItemMeasures.maxLength <= 26 && maxItemMeasures.maxWidth <= 28 && maxItemMeasures.maxHeight <= 48 && maxItemMeasures.totalWeight <= 10000:
+    //   return "34";
+    default:
+      throw new Error("No vehicle found");
+  }
 }
 
 module.exports = {
   getAuthToken,
   formatDate,
+  pickVehicle,
 };
