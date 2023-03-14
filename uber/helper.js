@@ -1,5 +1,5 @@
 const ExcelJS = require('exceljs');
-const priceListJson = require('./pricelist.json');
+const priceListJson = require('./priceList.json');
 
 // Used for excel to json conversion
 async function readPriceListData() {
