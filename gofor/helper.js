@@ -56,6 +56,7 @@ function pickVehicle(items) {
     measures.maxHeight = Math.max(measures.maxHeight, item.height);
     measures.maxWeight = Math.max(measures.maxWeight, item.weight);
     measures.totalWeight += item.weight;
+    measures.totalVolume += item.length * item.width * item.height;
     return measures;
   }, {
     maxLength: 0,
@@ -63,7 +64,11 @@ function pickVehicle(items) {
     maxHeight: 0,
     maxWeight: 0,
     totalWeight: 0,
+    totalVolume: 0,
   });
+
+  // convert total volume in cubic cm to cubic feet
+  const totalVolumeInCubicFeet = maxItemMeasuresInCmAndKg.totalVolume / 28316.8;
 
   const maxItemMeasures = {
     maxLength: maxItemMeasuresInCmAndKg.maxLength / 30.48,
@@ -71,14 +76,15 @@ function pickVehicle(items) {
     maxHeight: maxItemMeasuresInCmAndKg.maxHeight / 30.48,
     maxWeight: maxItemMeasuresInCmAndKg.maxWeight * 2.20462,
     totalWeight: maxItemMeasuresInCmAndKg.totalWeight * 2.20462,
+    totalVolume: maxItemMeasuresInCmAndKg.totalVolume / 28316.8
   };
 
   switch (true) {
-    case maxItemMeasures.maxLength <= 3 && maxItemMeasures.maxWidth <= 3 && maxItemMeasures.maxHeight <= 2 && maxItemMeasures.maxWeight <= 50 && maxItemMeasures.totalWeight <= 250:
+    case maxItemMeasures.maxLength <= 3 && maxItemMeasures.maxWidth <= 3 && maxItemMeasures.maxHeight <= 2 && maxItemMeasures.maxWeight <= 50 && maxItemMeasures.totalWeight <= 250 && maxItemMeasures.totalVolume <= 3*3*2:
       return "16";
-    case maxItemMeasures.maxLength <= 10 && maxItemMeasures.maxWidth <= 3.75 && maxItemMeasures.maxHeight <= 4 && maxItemMeasures.maxWeight <= 60 && maxItemMeasures.totalWeight <= 2000:
+    case maxItemMeasures.maxLength <= 10 && maxItemMeasures.maxWidth <= 3.75 && maxItemMeasures.maxHeight <= 4 && maxItemMeasures.maxWeight <= 60 && maxItemMeasures.totalWeight <= 2000 && maxItemMeasures.totalVolume <= 10*3.75*4:
       return "1";
-    case maxItemMeasures.maxLength <= 14 && maxItemMeasures.maxWidth <= 5 && maxItemMeasures.maxHeight <= 6 && maxItemMeasures.maxWeight <= 150 && maxItemMeasures.totalWeight <= 3500:
+    case maxItemMeasures.maxLength <= 14 && maxItemMeasures.maxWidth <= 5 && maxItemMeasures.maxHeight <= 6 && maxItemMeasures.maxWeight <= 150 && maxItemMeasures.totalWeight <= 3500 && maxItemMeasures.totalVolume <= 14*5*6:
       return "17";
     // TODO uncomment when this is also available vehicle
     // case maxItemMeasures.maxLength <= 26 && maxItemMeasures.maxWidth <= 28 && maxItemMeasures.maxHeight <= 48 && maxItemMeasures.totalWeight <= 10000:
