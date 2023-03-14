@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { getAuthToken, formatDate } = require("./helper");
+const { getAuthToken, formatDate, pickVehicle } = require("./helper");
 
 async function createGoforOrder({
     contactNumber,
@@ -34,7 +34,7 @@ async function createGoforOrder({
         endDate,
       },
       requestedVehicle: {
-        vehicleId: "16", // TODO depending on the items details
+        vehicleId: pickVehicle(items)
       },
       customerType: "",
       pickUp: {
@@ -102,7 +102,6 @@ async function createGoforOrder({
       const { data } = result;
       return {
         data: {
-          code: data.code,
           response: data.response,
         },
       };

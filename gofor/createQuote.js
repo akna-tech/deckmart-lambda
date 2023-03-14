@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { getAuthToken, formatDate } = require("./helper");
+const { getAuthToken, formatDate, pickVehicle } = require("./helper");
 
 async function createGoforQuote({
   contactNumber,
@@ -15,6 +15,7 @@ async function createGoforQuote({
 }) {
   try {
     const { startDate, endDate } = formatDate(deliveryDate, deliveryTime);
+    const vehicleId = pickVehicle(items);
     const itemsDetails = items.map((item, index) => ({
       itemId: index,
       quantity: item.pieces,
@@ -37,7 +38,7 @@ async function createGoforQuote({
         endDate,
       },
       requestedVehicle: {
-        vehicleId: "16", // TODO depending on the items details
+        vehicleId,
       },
       customerType: "",
       pickUp: {
@@ -109,7 +110,8 @@ async function createGoforQuote({
       errorMessage: "",
     };
   } catch (err) {
-    console.log(err.response.data);
+    console.log('err', err)
+    console.log(err.response?.data);
 
     const errorMessage = err.response?.data?.response || "Unable to create gofor quote";
     return {

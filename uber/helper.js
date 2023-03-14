@@ -1,5 +1,7 @@
 const ExcelJS = require('exceljs');
+const priceListJson = require('./pricelist.json');
 
+// Used for excel to json conversion
 async function readPriceListData() {
     const workbook = new ExcelJS.Workbook();
     const filePath = `${__dirname}/pricelist.xlsx`;
@@ -13,13 +15,14 @@ async function readPriceListData() {
             return;
         }   
         const postalCode = cell.value;
-        const uberPrice = worksheet.getRow(rowNumber).getCell(2).value.toFixed(2);
-        const toolBx250Price = worksheet.getRow(rowNumber).getCell(3).value.toFixed(2);
-        const toolBx1250Price = worksheet.getRow(rowNumber).getCell(4).value.toFixed(2);
-        const toolBx3250Price = worksheet.getRow(rowNumber).getCell(5).value.toFixed(2);
-        const toolBx250LargePrice = worksheet.getRow(rowNumber).getCell(6).value.toFixed(2);
-        const toolBx1250LargePrice = worksheet.getRow(rowNumber).getCell(7).value.toFixed(2);
-        const toolBx3250LargePrice = worksheet.getRow(rowNumber).getCell(8).value.toFixed(2);
+        
+        const uberPrice = worksheet.getRow(rowNumber).getCell(2).value ? worksheet.getRow(rowNumber).getCell(2).value.toFixed(2) : null;
+        const toolBx250Price = worksheet.getRow(rowNumber).getCell(3).value ? worksheet.getRow(rowNumber).getCell(3).value.toFixed(2) : null;
+        const toolBx1250Price = worksheet.getRow(rowNumber).getCell(4).value ? worksheet.getRow(rowNumber).getCell(4).value.toFixed(2) : null;
+        const toolBx3250Price = worksheet.getRow(rowNumber).getCell(5).value ? worksheet.getRow(rowNumber).getCell(5).value.toFixed(2) : null;
+        const toolBx250LargePrice = worksheet.getRow(rowNumber).getCell(6).value ? worksheet.getRow(rowNumber).getCell(6).value.toFixed(2) : null;
+        const toolBx1250LargePrice = worksheet.getRow(rowNumber).getCell(7).value ? worksheet.getRow(rowNumber).getCell(7).value.toFixed(2) : null;
+        const toolBx3250LargePrice = worksheet.getRow(rowNumber).getCell(8).value ? worksheet.getRow(rowNumber).getCell(8).value.toFixed(2) : null;
         const price = {
             uberPrice,
             toolBx250Price,
@@ -31,15 +34,8 @@ async function readPriceListData() {
         };
         postalCodeToPriceMap[postalCode] = price
     });
+    console.log(JSON.stringify(postalCodeToPriceMap));
     return postalCodeToPriceMap;
-}
-
-async function getPriceListByPostalCode(postalCode) {
-    const postalCodeToPriceMap = await readPriceListData();
-    if (!postalCodeToPriceMap[postalCode]) {
-        throw new Error('Postal code not found');
-    }
-    return postalCodeToPriceMap[postalCode];
 }
 
 function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
@@ -67,7 +63,10 @@ function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
 
 async function getUberPrice(items, destinationZip, deliveryDate, deliveryTime) {
     const zip3Letter = destinationZip.slice(0, 3);
-    const postalCodeToPriceMap = await getPriceListByPostalCode(zip3Letter);
+    const postalCodeToPriceMap = priceListJson[zip3Letter];
+    if (!postalCodeToPriceMap) {
+        throw new Error('Postal code not found');
+    }
     const itemTotalWeight = items.reduce((acc, item) => acc + item.weight * item.pieces, 0);
 
     const itemTotalWeightInLbs = itemTotalWeight * 2.20462;
@@ -82,25 +81,25 @@ async function getUberPrice(items, destinationZip, deliveryDate, deliveryTime) {
     switch (true) {
         case itemTotalWeightInLbs <= 30 && itemMaxLenghtInFoot <= 3 && itemMaxWidthInFoot <= 2 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '15:00:00'):
             allowedServicePrice= postalCodeToPriceMap.uberPrice;
-            break;
+            if (allowedServicePrice) break;
         case itemTotalWeightInLbs <= 250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00'):
             allowedServicePrice= postalCodeToPriceMap.toolBx250Price;
-            break;
+            if (allowedServicePrice) break;
         case itemTotalWeightInLbs <= 1250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00'):
             allowedServicePrice= postalCodeToPriceMap.toolBx1250Price;
-            break;
+            if (allowedServicePrice) break;
         case itemTotalWeightInLbs <= 3250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00'):
             allowedServicePrice= postalCodeToPriceMap.toolBx3250Price;
-            break;
+            if (allowedServicePrice) break;
         case itemTotalWeightInLbs <= 250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '00:00:00'):
             allowedServicePrice= postalCodeToPriceMap.toolBx250LargePrice;
-            break;
+            if (allowedServicePrice) break;
         case itemTotalWeightInLbs <= 1250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '00:00:00'):
             allowedServicePrice= postalCodeToPriceMap.toolBx1250LargePrice;
-            break;
+            if (allowedServicePrice) break;
         case itemTotalWeightInLbs <= 3250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '00:00:00'):
             allowedServicePrice= postalCodeToPriceMap.toolBx3250LargePrice;
-            break;
+            if (allowedServicePrice) break;
         default:
             throw new Error('Invalid order');
     }
