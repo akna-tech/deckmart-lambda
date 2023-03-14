@@ -24,6 +24,7 @@ async function order (event, context) {
 
 async function quote (event, context) {
     try {
+        const body = JSON.parse(event.body);
         const result = await createQuote(body);
         return {
             statusCode: 200,
