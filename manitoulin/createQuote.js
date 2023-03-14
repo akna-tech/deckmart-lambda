@@ -9,52 +9,52 @@ const errorResponse = {
 
 async function createManitoulinQuote({ destinationCity, destinationProvince, destinationZip, items }) {
   // https://www.mtdirect.ca/documents/apis/onlineQuoting
-  const contact = {
-    name: "Alex",
-    company: "DECKMART BUILDING SUPPLIES",
-    contact_method: "P",
-    contact_method_value: 9058125029,
-    shipment_type: "ROAD",
-    shipment_terms: "PPD",
-  }
-
-  const origin = {
-    city: "NORTH YORK",
-    province: "ON",
-    postal_zip: "M9L1P9",
-    residential_pickup: false,
-    tailgate_pickup: true,
-    flat_deck_pickup: true,
-    inside_pickup: true,
-    drop_off_at_terminal: false,
-    warehouse_pickup: false,
-  }
-
-  const destination = {
-    city: destinationCity.toUpperCase(),
-    province: destinationProvince.toUpperCase(),
-    postal_zip: destinationZip.toUpperCase(),
-    residential_pickup: true,
-    tailgate_pickup: true,
-    flat_deck_pickup: false,
-    inside_delivery: false,
-    dock_pickup: false,
-  }
-
-  const formattedItems = formatManitoulinQuoteItems(items)
-  const bodyParameters = {
-    contact,
-    origin,
-    destination,
-    items: formattedItems,
-  }
-
-  const token = await getManitoulinAuthToken()
-  const headers = {
-    'Authorization': `Token ${token}` 
-  }
-
   try {
+    const contact = {
+      name: "Alex",
+      company: "DECKMART BUILDING SUPPLIES",
+      contact_method: "P",
+      contact_method_value: 9058125029,
+      shipment_type: "ROAD",
+      shipment_terms: "PPD",
+    }
+
+    const origin = {
+      city: "NORTH YORK",
+      province: "ON",
+      postal_zip: "M9L1P9",
+      residential_pickup: false,
+      tailgate_pickup: true,
+      flat_deck_pickup: true,
+      inside_pickup: true,
+      drop_off_at_terminal: false,
+      warehouse_pickup: false,
+    }
+
+    const destination = {
+      city: destinationCity.toUpperCase(),
+      province: destinationProvince.toUpperCase(),
+      postal_zip: destinationZip.toUpperCase(),
+      residential_pickup: true,
+      tailgate_pickup: true,
+      flat_deck_pickup: false,
+      inside_delivery: false,
+      dock_pickup: false,
+    }
+
+    const formattedItems = formatManitoulinQuoteItems(items)
+    const bodyParameters = {
+      contact,
+      origin,
+      destination,
+      items: formattedItems,
+    }
+
+    const token = await getManitoulinAuthToken()
+    const headers = {
+      'Authorization': `Token ${token}` 
+    }
+
     const result = await axios.post(
       "https://www.mtdirect.ca/api/online_quoting/quote",
       bodyParameters,
@@ -63,40 +63,27 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
     const { data } = result
     const { id, timestamp, quote, total_charge } = data
     return {
-      data: { 
-        id,
-        gen_date: timestamp,
-        quote_num: quote,
-        total_charge,
-      },
-    };
+      carrier: "manitoulin",
+      price: total_charge,
+      error: false,
+      errorMessage: "",
+    }
   }
   catch (err) {
-    if (err.response.data && err.response.status) {
-      if (err.response.data[0] === errorResponse.quoteNotFound) {
-        return {
-          error: {
-            message: 'Could not find rate quote',
-            statusCode: 204,
-          }
-        };
-      }
-      if (err.response.data[0] === errorResponse.wrongAddress) {
-        return {
-          error: {
-            message: 'Invalid address',
-            statusCode: 406,
-          }
-        };
-      }
-    }
     console.log(err.message)
+    let errorMessage;
+    if (err.response?.data[0] === errorResponse.quoteNotFound) 
+      errorMessage = 'Could not find rate quote'
+    else if (err.response.data[0] === errorResponse.wrongAddress) 
+      errorMessage = 'Invalid address'
+    else 
+      errorMessage = 'Unable to get Manitoulin quote'
     return {
-      error: {
-        message: 'Unable to get Manitoulin quote',
-        statusCode: 500,
-      }
-    };
+      carrier: "manitoulin",
+      price: null,
+      error: true,
+      errorMessage,
+    }
   }
 };
 
