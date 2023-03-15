@@ -18,7 +18,6 @@ async function createOrder(body, service) {
     deliveryDate,
     deliveryTime,
   } = body;
-
   if (service === "manitoulin") {
     try {
       const manitoulinResult = await createManitoulinOrder({
@@ -36,9 +35,7 @@ async function createOrder(body, service) {
     } catch (err) {
       console.log(err.message);
       return {
-        data: {
-          message: "Unable to create manitoulin order",
-        },
+        message: "Unable to create manitoulin order",
         statusCode: 500,
       };
     }
@@ -55,9 +52,7 @@ async function createOrder(body, service) {
     } catch (err) {
       console.log(err.message);
       return {
-        data: {
-          message: "Unable to create uber order",
-        },
+        message: "Unable to create uber order",
         statusCode: 500,
       };
     }
@@ -79,9 +74,7 @@ async function createOrder(body, service) {
     } catch (err) {
       console.log(err.message);
       return {
-        data: {
-          message: "Unable to create gofor order",
-        },
+        message: "Unable to create gofor order",
         statusCode: 500,
       };
     }

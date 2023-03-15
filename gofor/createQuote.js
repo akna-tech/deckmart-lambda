@@ -105,7 +105,7 @@ async function createGoforQuote({
     const { data } = result;
     return {
       carrier: "gofor",
-      price: data.qtInfo[0].ApplicableRate,
+      price: data.qtInfo[0].TotalQuoteValue,
       error: false,
       errorMessage: "",
     };
