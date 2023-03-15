@@ -76,27 +76,21 @@ async function createManitoulinOrder ({
     );
 
     const { punum } = data;
+    console.log('manitoulin order punum', punum)
     return {
-      data : {
-        message: 'Successfully created manitoulin order',
-        pickupNumber: punum,
-      },
+      message: 'Successfully created manitoulin order',
       statusCode: 200,
     };
   } catch (err) {
     if (err.response.data && err.response.status) {
       return {
-        data: {
-          message: err.response.data,
-        },
+        message: err.response.data,
         statusCode: err.response.status,
       };
     }
     console.log(err.message)
     return {
-      data: {
-        message: 'Unable to create manitoulin order',
-      },
+      message: 'Unable to create manitoulin order',
       statusCode: 500,
     };
   }

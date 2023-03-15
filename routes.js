@@ -7,16 +7,16 @@ async function order (event, context) {
         const result = await createOrder(body, service.toLowerCase());
         return {
             statusCode: result.statusCode,
-            body: JSON.stringify(result.data),
+            body: JSON.stringify({
+                message: result.message
+            }),
         };
     }
     catch (error) {
         return {
             statusCode: 500,
             body: JSON.stringify({
-                error: {
-                    message: 'Unable to create order'
-                }
+                message: 'Unable to create order'
             }),
         };
     }
