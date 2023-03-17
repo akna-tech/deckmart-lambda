@@ -1,5 +1,6 @@
 const axios = require("axios");
 const { getAuthToken, formatDate, pickVehicle } = require("./helper");
+const { postalCodes } = require("./goforPostalCodes.json");
 
 async function createGoforOrder({
     contactNumber,
@@ -12,6 +13,13 @@ async function createGoforOrder({
     deliveryTime,
   }) {
     try {
+      const zip3letters = destinationZip.slice(0, 3);
+      if (!postalCodes.includes(zip3letters)) {
+        return {
+          message: "Destination out of gofor service area",
+          statusCode: 403,
+        };
+      }
       const { startDate, endDate } = formatDate(deliveryDate, deliveryTime);
       const itemsDetails = items.map((item, index) => ({
         itemId: index,
