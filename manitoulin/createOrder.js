@@ -82,7 +82,7 @@ async function createManitoulinOrder ({
       statusCode: 200,
     };
   } catch (err) {
-    if (err.response.data && err.response.status) {
+    if (err.response?.data && err.response?.status) {
       return {
         message: err.response.data,
         statusCode: err.response.status,

@@ -102,12 +102,13 @@ async function createQuote(body) {
     items,
   });
 
-  const uberResult = await createUberQuote(
+  const result = await createUberQuote(
     items,
     destinationZip,
     deliveryDate,
     deliveryTime
   );
+  const { uberResult, deckmartExpressResult } = result;
 
   const goforResult = await createGoforQuote({
     destinationCity,
@@ -121,7 +122,7 @@ async function createQuote(body) {
     clientName,
     orderNumber,
   });
-  const quotes = [manitoulinResult, uberResult, goforResult];
+  const quotes = [manitoulinResult, uberResult, deckmartExpressResult, goforResult];
 
   return {
     quotes,

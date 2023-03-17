@@ -67,9 +67,6 @@ function pickVehicle(items) {
     totalVolume: 0,
   });
 
-  // convert total volume in cubic cm to cubic feet
-  const totalVolumeInCubicFeet = maxItemMeasuresInCmAndKg.totalVolume / 28316.8;
-
   const maxItemMeasures = {
     maxLength: maxItemMeasuresInCmAndKg.maxLength / 30.48,
     maxWidth: maxItemMeasuresInCmAndKg.maxWidth / 30.48,

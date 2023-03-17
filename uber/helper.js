@@ -77,33 +77,48 @@ async function getUberPrice(items, destinationZip, deliveryDate, deliveryTime) {
     const itemMaxWidthInFoot = itemMaxWidthInCm * 0.0328084;
     const itemMaxHeightInFoot = itemMaxHeightInCm * 0.0328084;
 
-    let allowedServicePrice;
+    let uberPrice, uberSameDay, deckmartExpressPrice, deckmartExpressSameDay;
+
     switch (true) {
-        case itemTotalWeightInLbs <= 30 && itemMaxLenghtInFoot <= 3 && itemMaxWidthInFoot <= 2 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '15:00:00'):
-            allowedServicePrice= postalCodeToPriceMap.uberPrice;
-            if (allowedServicePrice) break;
-        case itemTotalWeightInLbs <= 250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00'):
-            allowedServicePrice= postalCodeToPriceMap.toolBx250Price;
-            if (allowedServicePrice) break;
-        case itemTotalWeightInLbs <= 1250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00'):
-            allowedServicePrice= postalCodeToPriceMap.toolBx1250Price;
-            if (allowedServicePrice) break;
-        case itemTotalWeightInLbs <= 3250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00'):
-            allowedServicePrice= postalCodeToPriceMap.toolBx3250Price;
-            if (allowedServicePrice) break;
-        case itemTotalWeightInLbs <= 250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '00:00:00'):
-            allowedServicePrice= postalCodeToPriceMap.toolBx250LargePrice;
-            if (allowedServicePrice) break;
-        case itemTotalWeightInLbs <= 1250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '00:00:00'):
-            allowedServicePrice= postalCodeToPriceMap.toolBx1250LargePrice;
-            if (allowedServicePrice) break;
-        case itemTotalWeightInLbs <= 3250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2 && isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '00:00:00'):
-            allowedServicePrice= postalCodeToPriceMap.toolBx3250LargePrice;
-            if (allowedServicePrice) break;
+        case itemTotalWeightInLbs <= 30 && itemMaxLenghtInFoot <= 3 && itemMaxWidthInFoot <= 2 && itemMaxHeightInFoot <= 2:
+            uberPrice = postalCodeToPriceMap.uberPrice;
+            uberSameDay = isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '15:00:00')
+            if (uberPrice) break;
+
+        case itemTotalWeightInLbs <= 250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2:
+            deckmartExpressPrice = postalCodeToPriceMap.toolBx250Price;
+            deckmartExpressSameDay = isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00');
+            if (deckmartExpressPrice) break;
+
+        case itemTotalWeightInLbs <= 1250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2:
+            deckmartExpressPrice = postalCodeToPriceMap.toolBx1250Price;
+            deckmartExpressSameDay = isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00');
+            if (deckmartExpressPrice) break;
+
+        case itemTotalWeightInLbs <= 3250 && itemMaxLenghtInFoot <= 16 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2:
+            deckmartExpressPrice = postalCodeToPriceMap.toolBx3250Price;
+            deckmartExpressSameDay = isDeliveryTimeAcceptable(deliveryDate, deliveryTime, '11:00:00');
+            if (deckmartExpressPrice) break;
+
+        case itemTotalWeightInLbs <= 250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2:
+            deckmartExpressPrice = postalCodeToPriceMap.toolBx250LargePrice;
+            deckmartExpressSameDay = false
+            if (deckmartExpressPrice) break;
+
+        case itemTotalWeightInLbs <= 1250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2:
+            deckmartExpressPrice = postalCodeToPriceMap.toolBx1250LargePrice;
+            deckmartExpressSameDay = false
+            if (deckmartExpressPrice) break;
+
+        case itemTotalWeightInLbs <= 3250 && itemMaxLenghtInFoot <= 20 && itemMaxWidthInFoot <= 4 && itemMaxHeightInFoot <= 2:
+            deckmartExpressPrice = postalCodeToPriceMap.toolBx3250LargePrice;
+            deckmartExpressSameDay = false
+            if (deckmartExpressPrice) break;
+
         default:
             throw new Error('Invalid order');
     }
-    return allowedServicePrice;
+    return { uberPrice, uberSameDay, deckmartExpressPrice, deckmartExpressSameDay };
 }
 
 module.exports = {
