@@ -49,14 +49,17 @@ function getItemClass (item) {
 
 function formatManitoulinOrderItems (items) {
     const formattedItems = items.map(item => {
-        item.item_class = getItemClass(item);
-        // item.total_weight = item.weight;
-        item.weight_units = 'KG';
-        item.dimension_units = 'CM';
-        item.package_code = 'SKIDS';
-        delete item.description;
-        delete item.price;
-        return item;
+        return {
+            item_class: getItemClass(item),
+            weight_units: 'KG',
+            dimension_units: 'CM',
+            package_code: 'SKIDS',
+            pieces: item.pieces,
+            length: Math.round(item.length),
+            width: Math.round(item.width),
+            height: Math.round(item.height),
+            weight: Math.round(item.weight),
+        }
     })
     return formattedItems;
 }
@@ -68,10 +71,10 @@ function formatManitoulinQuoteItems (items) {
             pieces: item.pieces,
             package_code_value: 'SK',
             description: item.description,
-            length: item.length,
-            width: item.width,
-            height: item.height,
-            total_weight: item.weight,
+            length: Math.round(item.length),
+            width: Math.round(item.width),
+            height: Math.round(item.height),
+            total_weight: Math.round(item.weight),
             weight_unit_value: 'KGS',
             unit_value: 'C',
         }

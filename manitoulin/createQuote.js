@@ -30,14 +30,13 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
       drop_off_at_terminal: false,
       warehouse_pickup: false,
     }
-
     const destination = {
       city: destinationCity.toUpperCase(),
       province: destinationProvince.toUpperCase(),
       postal_zip: destinationZip.toUpperCase(),
-      residential_pickup: true,
-      tailgate_pickup: true,
-      flat_deck_pickup: false,
+      residential_delivery: true,
+      tailgate_delivery: true,
+      flat_deck_delivery: false,
       inside_delivery: false,
       dock_pickup: false,
     }
@@ -70,7 +69,13 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
     }
   }
   catch (err) {
-    console.log(err.message)
+    if (err.response?.data) {
+      console.log('err.response.data', JSON.stringify(err.response.data))
+    }
+    else {
+      console.log('Unknown Manitoulin quote error: ', err.message)
+    }
+
     let errorMessage;
     if (err.response?.data[0] === errorResponse.quoteNotFound) 
       errorMessage = 'Could not find rate quote'
@@ -78,6 +83,7 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
       errorMessage = 'Invalid address'
     else 
       errorMessage = 'Unable to get Manitoulin quote'
+
     return {
       carrier: "manitoulin",
       price: null,
