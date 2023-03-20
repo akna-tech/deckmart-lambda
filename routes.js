@@ -32,7 +32,7 @@ async function quote (event, context) {
         };
     }
     catch (error) {
-        console.log('Error in quote route: ', error.message || 'Unknown error')
+        console.log('Uncaught error in Quote route: ', error.message || 'Unknown error')
         return {
             statusCode: 500,
             body: JSON.stringify({

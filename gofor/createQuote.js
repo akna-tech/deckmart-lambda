@@ -120,10 +120,13 @@ async function createGoforQuote({
       errorMessage: "",
     };
   } catch (err) {
-    console.log('err', err)
-    console.log(err.response?.data);
-
-    const errorMessage = err.response?.data?.response || "Unable to create gofor quote";
+    if (err.response?.data) {
+      console.log('Gofor quote error: ', JSON.stringify(err.response?.data))
+    }
+    else {
+      console.log('Gofor quote error: ', err)
+    }
+    const errorMessage = err.response?.data?.response || "Couldn't get gofor quote";
     return {
       carrier: "gofor",
       price: null,

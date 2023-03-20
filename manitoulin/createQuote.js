@@ -70,7 +70,7 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
   }
   catch (err) {
     if (err.response?.data) {
-      console.log('err.response.data', JSON.stringify(err.response.data))
+      console.log('Error Manitoulin Quote: ', JSON.stringify(err.response.data))
     }
     else {
       console.log('Unknown Manitoulin quote error: ', err.message)

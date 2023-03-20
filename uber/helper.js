@@ -116,7 +116,7 @@ async function getUberPrice(items, destinationZip, deliveryDate, deliveryTime) {
             if (deckmartExpressPrice) break;
 
         default:
-            throw new Error('Invalid order');
+            throw new Error('Uber/Deckmart Express price is not available for this order');
     }
     return { uberPrice, uberSameDay, deckmartExpressPrice, deckmartExpressSameDay };
 }

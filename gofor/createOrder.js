@@ -113,7 +113,7 @@ async function createGoforOrder({
         statusCode: 200,
       };
     } catch (err) {
-      console.log('gofor err: ', err)
+      console.log('Gofor Order error: ', JSON.stringify(err.response?.data?.response || err.message));
       return {
         message: err.response?.data?.response || err.message || "Unable to create gofor order",
         statusCode: err.response?.data?.code || 500,

@@ -16,7 +16,7 @@ async function getManitoulinAuthToken() {
       const { token } = result.data;
       return token;
     } catch (error) {
-      console.log("error getting auth", error);
+      console.log("Error in Manitoulin getting auth", error);
       throw new Error('Unable to get Manitoulin token');
     }
 }

@@ -76,19 +76,20 @@ async function createManitoulinOrder ({
     );
 
     const { punum } = data;
-    console.log('manitoulin order punum', punum)
+    console.log('Manitoulin order punum', punum)
     return {
       message: 'Successfully created manitoulin order',
       statusCode: 200,
     };
   } catch (err) {
     if (err.response?.data && err.response?.status) {
+      console.log('Error Manitoulin Order: ', JSON.stringify(err.response.data))
       return {
         message: err.response.data,
         statusCode: err.response.status,
       };
     }
-    console.log(err.message)
+    console.log('Unknown Manitoulin Order Error: ', err)
     return {
       message: 'Unable to create manitoulin order',
       statusCode: 500,

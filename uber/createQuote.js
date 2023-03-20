@@ -39,7 +39,7 @@ async function createUberQuote (items, destinationZip, deliveryDate, deliveryTim
         }
     }
     catch (err) {
-        console.log(err.message);
+        console.log('Unknown Error in Uber Quote: ', err);
         return {
             uberResult: {
                 carrier: "uber",

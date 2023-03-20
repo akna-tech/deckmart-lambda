@@ -14,7 +14,7 @@ async function createUberOrder (items, destinationZip, deliveryDate, deliveryTim
         }
     }
     catch (err) {
-        console.log(err);
+        console.log('Unknown Error in Uber Order: ', err);
         return {
             statusCode: 500,
             message: 'Unable to create Uber/DeckmartExpress order',

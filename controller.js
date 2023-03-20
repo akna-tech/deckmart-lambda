@@ -18,7 +18,7 @@ async function createOrder(body, service) {
     deliveryDate,
     deliveryTime,
   } = body;
-  if (service === "manitoulin") {
+  if (service.toLowerCase() === "manitoulin") {
     try {
       const manitoulinResult = await createManitoulinOrder({
         items,
@@ -33,14 +33,14 @@ async function createOrder(body, service) {
       });
       return manitoulinResult;
     } catch (err) {
-      console.log(err.message);
+      console.log('Manitoulin order uncaught error: ', err.message);
       return {
         message: "Unable to create manitoulin order",
         statusCode: 500,
       };
     }
   }
-  if (service === "uber") {
+  if (service.toLowerCase() === "uber" || service.toLowerCase() === "deckmartexpress" || service.toLowerCase() === "deckmart express") {
     try {
       const uberResult = await createUberOrder(
         items,
@@ -50,14 +50,14 @@ async function createOrder(body, service) {
       );
       return uberResult;
     } catch (err) {
-      console.log(err.message);
+      console.log('Uber/Deckmart Express order uncaught error: ', err.message);
       return {
-        message: "Unable to create uber order",
+        message: `Unable to create ${service} order`,
         statusCode: 500,
       };
     }
   }
-  if (service === "gofor") {
+  if (service.toLowerCase() === "gofor") {
     try {
       const goforResult = await createGoforOrder({
         items,
@@ -72,7 +72,7 @@ async function createOrder(body, service) {
       });
       return goforResult;
     } catch (err) {
-      console.log(err.message);
+      console.log('GoFor order uncaught error: ', err.message);
       return {
         message: "Unable to create gofor order",
         statusCode: 500,
