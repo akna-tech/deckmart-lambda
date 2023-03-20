@@ -16,8 +16,17 @@ async function createOrder(body, service) {
     destinationProvince,
     destinationZip,
     deliveryDate,
-    deliveryTime,
   } = body;
+  
+  const locales = process.env.env === 'production' ? 'en-CA' : undefined;
+  const timeZone = process.env.env === 'production' ? 'America/Toronto' : undefined;
+  const currentDate = new Date().toLocaleString(locales, {
+    timeZone,
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  });
+
   if (service.toLowerCase() === "manitoulin") {
     try {
       const manitoulinResult = await createManitoulinOrder({
@@ -29,7 +38,7 @@ async function createOrder(body, service) {
         consigneeProvince: destinationProvince,
         consigneePostal: destinationZip,
         deliveryDate,
-        deliveryTime,
+        deliveryTime: currentDate,
       });
       return manitoulinResult;
     } catch (err) {
@@ -46,7 +55,7 @@ async function createOrder(body, service) {
         items,
         destinationZip,
         deliveryDate,
-        deliveryTime
+        currentDate
       );
       return uberResult;
     } catch (err) {
@@ -68,7 +77,7 @@ async function createOrder(body, service) {
         destinationProvince,
         destinationZip,
         deliveryDate,
-        deliveryTime,
+        deliveryTime: currentDate,
       });
       return goforResult;
     } catch (err) {
@@ -90,11 +99,18 @@ async function createQuote(body) {
     contactNumber,
     items,
     deliveryDate,
-    deliveryTime,
     clientName,
     orderNumber
   } = body;
 
+  const locales = process.env.env === 'production' ? 'en-CA' : undefined;
+  const timeZone = process.env.env === 'production' ? 'America/Toronto' : undefined;
+  const currentDate = new Date().toLocaleString(locales, {
+    timeZone,
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  });
   const manitoulinResult = await createManitoulinQuote({
     destinationCity,
     destinationProvince,
@@ -106,7 +122,7 @@ async function createQuote(body) {
     items,
     destinationZip,
     deliveryDate,
-    deliveryTime
+    currentDate
   );
   const { uberResult, deckmartExpressResult } = result;
 
@@ -118,7 +134,7 @@ async function createQuote(body) {
     contactNumber,
     items,
     deliveryDate,
-    deliveryTime,
+    deliveryTime: currentDate,
     clientName,
     orderNumber,
   });

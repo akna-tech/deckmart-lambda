@@ -27,26 +27,62 @@ async function getAuthToken() {
 
 function formatDate(deliveryDate, deliveryTime) {
   try {
-    let startDate = new Date(`${deliveryDate} ${deliveryTime}`);
-    const endDateString = new Date(
-      startDate.setHours(startDate.getHours() + 1)
-    );
-    const endYear = endDateString.getFullYear();
-    let endMonth = endDateString.getMonth() + 1;
-    endMonth = ("0" + endMonth).slice(-2);
-    let endDay = endDateString.getDate();
-    endDay = ("0" + endDay).slice(-2);
-    let endHour = endDateString.getHours();
-    endHour = ("0" + endHour).slice(-2);
-    let endMinute = endDateString.getMinutes();
-    endMinute = ("0" + endMinute).slice(-2);
+    // calculate if deliveryDate is today
+    const today = new Date();
+    const deliveryDateObj = new Date(deliveryDate);
+    const isToday = deliveryDateObj.getDate() === today.getDate() &&
+      deliveryDateObj.getMonth() === today.getMonth() &&
+      deliveryDateObj.getFullYear() === today.getFullYear();
+    
+    // if deliveryDate is earlier then today, throw error
+    if (deliveryDateObj < today) {
+      throw new Error('Delivery date is earlier than today');
+    }
 
-    startDate = `${deliveryDate} ${deliveryTime}`;
-    const endDate = `${endYear}-${endMonth}-${endDay} ${endHour}:${endMinute}`;
-    return { startDate, endDate };
+    // if deliveryDate is not today, set delivery window from 11am to 3pm
+    if (!isToday) {
+      const startDate = formatWithDateTime(deliveryDate, '11:00');
+      const endDate = formatWithDateTime(deliveryDate, '15:00');
+      return {
+        startDate,
+        endDate,
+        sameDay: true,
+      }
+    }
+
+    let currentDate = new Date(`${deliveryDate} ${deliveryTime}`);
+
+    // if deliveryTime is before 12pm, set deliveryDate to tomorrow
+    if (currentDate.getHours() > 11) {
+      const startDate = formatWithDateTime(deliveryDate, '11:00', 1);
+      const endDate = formatWithDateTime(deliveryDate, '15:00', 1);
+      return {
+        startDate,
+        endDate,
+        sameDay: false,
+      }
+    }
+    const startDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 1);
+    const endDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 4);
+    return { startDate, endDate, sameDay: true };
   } catch (err) {
-    console.log(err);
+    console.log('Error in gofor formatDate function: ', err);
+    throw err;
   }
+}
+
+function formatWithDateTime(deliveryDate, deliveryTime, addDays = 0, addHours = 0) {
+  const dateString = new Date(`${deliveryDate} ${deliveryTime}`);
+  const year = dateString.getFullYear();
+  let month = dateString.getMonth() + 1;
+  month = ("0" + month).slice(-2);
+  let day = dateString.getDate() + addDays;
+  day = ("0" + day).slice(-2);
+  let hour = dateString.getHours() + addHours;
+  hour = ("0" + hour).slice(-2);
+  let minute = dateString.getMinutes();
+  minute = ("0" + minute).slice(-2);
+  return `${year}-${month}-${day} ${hour}:${minute}`;
 }
 
 function pickVehicle(items) {

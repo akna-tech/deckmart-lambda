@@ -41,6 +41,9 @@ async function readPriceListData() {
 function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
     const today = new Date();
     const deliveryDateObj = new Date(deliveryDate);
+    if (today > deliveryDateObj) {
+        throw new Error('Delivery date cannot be in the past');
+    }
     const isToday = today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() === deliveryDateObj.getMonth() && today.getDate() === deliveryDateObj.getDate();
     if (isToday) {
         const deliveryTimeHours = parseInt(deliveryTime.split(':')[0]);

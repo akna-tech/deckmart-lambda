@@ -20,7 +20,7 @@ async function createGoforOrder({
           statusCode: 403,
         };
       }
-      const { startDate, endDate } = formatDate(deliveryDate, deliveryTime);
+      const { startDate, endDate, sameDay } = formatDate(deliveryDate, deliveryTime);
       const itemsDetails = items.map((item, index) => ({
         itemId: index,
         quantity: item.pieces,
@@ -97,8 +97,7 @@ async function createGoforOrder({
           },
         ],
       };
-    
-      
+
       const token = await getAuthToken();
       const goForQuoteUrl = process.env.GOFOR_ORDER_URL;
   
@@ -108,12 +107,19 @@ async function createGoforOrder({
       };
 
       const result = await axios.post(goForQuoteUrl, body, { headers });
+      console.log('Gofor Order result: ', result.data);
+      const sameDayMessage = sameDay ? "order will be delivered same day" : "order will be delivered next day";
       return {
-        message: "Successfully created gofor order",
+        message: "Successfully created gofor order, " + sameDayMessage,
         statusCode: 200,
       };
     } catch (err) {
-      console.log('Gofor Order error: ', JSON.stringify(err.response?.data?.response || err.message));
+      if (err.response?.data) {
+        console.log('Gofor Order error: ', JSON.stringify(err.response?.data));
+      }
+      else {
+        console.log('Gofor Order error: ', err.message);
+      }
       return {
         message: err.response?.data?.response || err.message || "Unable to create gofor order",
         statusCode: err.response?.data?.code || 500,

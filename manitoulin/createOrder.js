@@ -31,7 +31,7 @@ async function createManitoulinOrder ({
     address: consigneeAddress,
     city: consigneeCity.toUpperCase(),
     province: consigneeProvince.toUpperCase(),
-    postal: consigneePostal.toUpperCase(),
+    postal: consigneePostal.toUpperCase().slice(0, 3),
   }
 
   const deliveryTimeHours = parseInt(deliveryTime.split(':')[0]);

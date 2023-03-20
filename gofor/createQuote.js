@@ -24,7 +24,7 @@ async function createGoforQuote({
         errorMessage: "Destination out of gofor service area",
       };
     }
-    const { startDate, endDate } = formatDate(deliveryDate, deliveryTime);
+    const { startDate, endDate, sameDay } = formatDate(deliveryDate, deliveryTime);
     const vehicleId = pickVehicle(items);
     const itemsDetails = items.map((item, index) => ({
       itemId: index,
@@ -118,6 +118,7 @@ async function createGoforQuote({
       price: data.qtInfo[0].TotalQuoteValue,
       error: false,
       errorMessage: "",
+      sameDay,
     };
   } catch (err) {
     if (err.response?.data) {
