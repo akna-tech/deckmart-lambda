@@ -66,9 +66,7 @@ async function createManitoulinOrder ({
   const headers = {
     Authorization: `Token ${token}`,
   };
-  try {
-    // TODO add stripe payment logic here
-    
+  try {    
     const { data } = await axios.post(
       "https://www.mtdirect.ca/api/online_pickup/submit",
       body,

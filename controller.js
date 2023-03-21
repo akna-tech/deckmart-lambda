@@ -16,6 +16,7 @@ async function createOrder(body, service) {
     destinationProvince,
     destinationZip,
     deliveryDate,
+    clientName,
   } = body;
   
   const locales = process.env.env === 'production' ? 'en-CA' : undefined;
@@ -78,6 +79,7 @@ async function createOrder(body, service) {
         destinationZip,
         deliveryDate,
         deliveryTime: currentDate,
+        clientName,
       });
       return goforResult;
     } catch (err) {
