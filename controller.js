@@ -16,6 +16,7 @@ async function createOrder(body, service) {
     destinationProvince,
     destinationZip,
     deliveryDate,
+    orderNumber,
     clientName,
   } = body;
   
@@ -79,6 +80,7 @@ async function createOrder(body, service) {
         destinationZip,
         deliveryDate,
         deliveryTime: currentDate,
+        orderNumber,
         clientName,
       });
       return goforResult;

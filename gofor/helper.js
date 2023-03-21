@@ -35,8 +35,11 @@ function formatDate(deliveryDate, deliveryTime) {
       deliveryDateObj.getFullYear() === today.getFullYear();
     
     // if deliveryDate is earlier then today, throw error
-    if (deliveryDateObj < today) {
-      throw new Error('Delivery date is earlier than today');
+    if (today.getFullYear() > deliveryDateObj.getFullYear() ||
+        (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() > deliveryDateObj.getMonth()) ||
+        (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() <= deliveryDateObj.getMonth() && today.getDate() > deliveryDateObj.getDate())
+        ) {
+        throw new Error('Delivery date cannot be in the past');
     }
 
     // if deliveryDate is not today, set delivery window from 11am to 3pm

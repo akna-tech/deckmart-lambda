@@ -41,7 +41,10 @@ async function readPriceListData() {
 function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
     const today = new Date();
     const deliveryDateObj = new Date(deliveryDate);
-    if (today > deliveryDateObj) {
+    if (today.getFullYear() > deliveryDateObj.getFullYear() ||
+        (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() > deliveryDateObj.getMonth()) ||
+        (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() <= deliveryDateObj.getMonth() && today.getDate() > deliveryDateObj.getDate())
+        ) {
         throw new Error('Delivery date cannot be in the past');
     }
     const isToday = today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() === deliveryDateObj.getMonth() && today.getDate() === deliveryDateObj.getDate();
@@ -57,9 +60,6 @@ function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
             return true
         }
         return false
-    }
-    if (today > deliveryDateObj) {
-        throw new Error('Delivery date cannot be in the past');
     }
     return true
 }
