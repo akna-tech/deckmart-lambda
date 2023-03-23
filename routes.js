@@ -56,7 +56,7 @@ async function checkout (event) {
     };
 }
 
-async function paymentIntent (event) {
+async function paymentIntent (event, context) {
     const body = JSON.parse(event.body);
     const result = await createPaymentIntent(body);
     const { error } = result;
