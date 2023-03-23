@@ -27,6 +27,13 @@ async function getAuthToken() {
 
 function formatDate(deliveryDate, deliveryTime) {
   try {
+    const currentDateUTC = new Date().toLocaleString('en-GB', {
+      timeZone: 'UTC',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: false,
+    });
+    const hourDifference = parseInt(parseInt(currentDateUTC.split(':')[0]) - parseInt(deliveryTime.split(':')[0]));
     // calculate if deliveryDate is today
     const today = new Date();
     const deliveryDateObj = new Date(deliveryDate);
@@ -42,10 +49,64 @@ function formatDate(deliveryDate, deliveryTime) {
         throw new Error('Delivery date cannot be in the past');
     }
 
-    // if deliveryDate is not today, set delivery window from 11am to 3pm
-    if (!isToday) {
-      const startDate = formatWithDateTime(deliveryDate, '11:00');
-      const endDate = formatWithDateTime(deliveryDate, '15:00');
+    // if delivery date is friday, set deliveryDate to monday
+    if (isToday && deliveryDateObj.getDay() === 5 && currentDate.getHours() > 11) {
+      console.log('Gofor format date: delivery on Friday after 11, next Monday delivery, manual order')
+      return {
+        startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`, 3),
+        endDate: formatWithDateTime(deliveryDate, `${10 + hourDifference + 4 }:00`, 3),
+        sameDay: false,
+        skipOrder: true
+      }
+    }
+
+    if (isToday && deliveryDateObj.getDay() === 5 && currentDate.getHours() < 11) {
+      console.log('Gofor format date: delivery on Friday before 11, same day delivery')
+      return {
+        startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`),
+        endDate: formatWithDateTime(deliveryDate, `${10 + hourDifference + 4 }:00`),
+        sameDay: true,
+      }
+    }
+
+    if (isToday && deliveryDateObj.getDay() === 6) {
+      console.log('Gofor format date: delivery on Saturday, next Monday delivery, manual order')
+      return {
+        startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`, 2),
+        endDate: formatWithDateTime(deliveryDate, `${10 + hourDifference + 4 }:00`, 2),
+        sameDay: false,
+        skipOrder: true
+      }
+    }
+
+    if (isToday && deliveryDateObj.getDay() === 0) {
+      console.log('Gofor format date: delivery on Sunday, next day delivery, manual order')
+      return {
+        startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`, 1),
+        endDate: formatWithDateTime(deliveryDate, `${10 + hourDifference + 4 }:00`, 1),
+        sameDay: false,
+        skipOrder: true
+      }
+    }
+
+    let currentDate = new Date(`${deliveryDate} ${deliveryTime}`);
+
+    // if deliveryTime is after 11am and before 3pm, set deliveryDate to tomorrow
+    if (isToday && currentDate.getHours() >= 11) {
+      console.log('Gofor format date: delivery today, after 11:00, next day delivery')
+      const startDate = formatWithDateTime(deliveryDate, `${currentDate.getHours() + hourDifference + 1 }:00`);
+      const endDate = formatWithDateTime(deliveryDate, `${16 + hourDifference }:00`);
+      return {
+        startDate,
+        endDate,
+        sameDay: false,
+      }
+    }
+
+    if (isToday && currentDate.getHours() < 11) {
+      console.log('Gofor format date: delivery today, before 11:00, same day delivery')
+      const startDate = formatWithDateTime(deliveryDate, `${currentDate.getHours() + hourDifference + 1 }:00`);
+      const endDate = formatWithDateTime(deliveryDate, `${16 + hourDifference }:00`);
       return {
         startDate,
         endDate,
@@ -53,21 +114,10 @@ function formatDate(deliveryDate, deliveryTime) {
       }
     }
 
-    let currentDate = new Date(`${deliveryDate} ${deliveryTime}`);
-
-    // if deliveryTime is before 12pm, set deliveryDate to tomorrow
-    if (currentDate.getHours() > 11) {
-      const startDate = formatWithDateTime(deliveryDate, '11:00', 1);
-      const endDate = formatWithDateTime(deliveryDate, '15:00', 1);
-      return {
-        startDate,
-        endDate,
-        sameDay: false,
-      }
-    }
-    const startDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 1);
-    const endDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 4);
-    return { startDate, endDate, sameDay: true };
+    console.log('Gofor format date: delivery not today, manual order')
+    const startDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 1 + hourDifference);
+    const endDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 4 + hourDifference);
+    return { startDate, endDate, sameDay: true, skipOrder: true };
   } catch (err) {
     console.log('Error in gofor formatDate function: ', err);
     throw err;

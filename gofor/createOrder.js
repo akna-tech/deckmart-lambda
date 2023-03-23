@@ -22,7 +22,16 @@ async function createGoforOrder({
           statusCode: 403,
         };
       }
-      const { startDate, endDate, sameDay } = formatDate(deliveryDate, deliveryTime);
+      const { startDate, endDate, sameDay, skipOrder } = formatDate(deliveryDate, deliveryTime);
+      if (skipOrder) {
+        return {
+          message: "Order will be manually created",
+          statusCode: 200,
+        };
+      }
+      console.log('Gofor current time: ', new Date().toISOString());
+      console.log('Gofor Order startDate: ', startDate);
+      console.log('Gofor Order endDate: ', endDate);
       const itemsDetails = items.map((item, index) => ({
         itemId: index,
         quantity: item.pieces,
@@ -95,11 +104,12 @@ async function createGoforOrder({
             dropOffNotification: {
               notificationType: "None",
               IsCustomText: false,
+              // notificationType: "SMS",
             },
           },
         ],
       };
-
+      console.log('Gofor Order body: ', JSON.stringify(body));
       const token = await getAuthToken();
       const goForQuoteUrl = process.env.GOFOR_ORDER_URL;
   
