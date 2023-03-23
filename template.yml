@@ -35,7 +35,10 @@ Parameters:
     
     StripeKey:
         Type: String
-        Description: manitoulin username
+        Description: stripe key
+    StripePublicKey:
+        Type: String
+        Description: stripe public key
 
 
 Globals:
@@ -57,6 +60,7 @@ Globals:
                 GOFOR_QUOTE_URL: !Ref gofor_quote_url
                 GOFOR_ORDER_URL: !Ref gofor_order_url
                 STRIPE_KEY: !Ref StripeKey
+                STRIPE_PUBLIC_KEY: !Ref StripePublicKey
 
 Resources:
     # REST API
