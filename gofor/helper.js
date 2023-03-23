@@ -36,10 +36,13 @@ function formatDate(deliveryDate, deliveryTime) {
     const hourDifference = parseInt(parseInt(currentDateUTC.split(':')[0]) - parseInt(deliveryTime.split(':')[0]));
     // calculate if deliveryDate is today
     const today = new Date();
+    console.log('Gofor format date -- today: ', today)
     const deliveryDateObj = new Date(deliveryDate);
+    console.log('Gofor format date -- deliveryDateObj: ', deliveryDateObj)
     const isToday = deliveryDateObj.getDate() === today.getDate() &&
       deliveryDateObj.getMonth() === today.getMonth() &&
       deliveryDateObj.getFullYear() === today.getFullYear();
+    console.log('Gofor format date -- isToday: ', isToday)
     
     // if deliveryDate is earlier then today, throw error
     if (today.getFullYear() > deliveryDateObj.getFullYear() ||
@@ -47,6 +50,15 @@ function formatDate(deliveryDate, deliveryTime) {
         (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() <= deliveryDateObj.getMonth() && today.getDate() > deliveryDateObj.getDate())
         ) {
         throw new Error('Delivery date cannot be in the past');
+    }
+
+    if (isToday && deliveryDateObj.getDay() === 5 && currentDate.getHours() < 11) {
+      console.log('Gofor format date: delivery on Friday before 11, same day delivery')
+      return {
+        startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`),
+        endDate: formatWithDateTime(deliveryDate, `${10 + hourDifference + 4 }:00`),
+        sameDay: true,
+      }
     }
 
     // if delivery date is friday, set deliveryDate to monday
@@ -60,16 +72,7 @@ function formatDate(deliveryDate, deliveryTime) {
       }
     }
 
-    if (isToday && deliveryDateObj.getDay() === 5 && currentDate.getHours() < 11) {
-      console.log('Gofor format date: delivery on Friday before 11, same day delivery')
-      return {
-        startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`),
-        endDate: formatWithDateTime(deliveryDate, `${10 + hourDifference + 4 }:00`),
-        sameDay: true,
-      }
-    }
-
-    if (isToday && deliveryDateObj.getDay() === 6) {
+    if (deliveryDateObj.getDay() === 6) {
       console.log('Gofor format date: delivery on Saturday, next Monday delivery, manual order')
       return {
         startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`, 2),
@@ -79,7 +82,7 @@ function formatDate(deliveryDate, deliveryTime) {
       }
     }
 
-    if (isToday && deliveryDateObj.getDay() === 0) {
+    if (deliveryDateObj.getDay() === 0) {
       console.log('Gofor format date: delivery on Sunday, next day delivery, manual order')
       return {
         startDate: formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`, 1),
@@ -94,8 +97,8 @@ function formatDate(deliveryDate, deliveryTime) {
     // if deliveryTime is after 11am and before 3pm, set deliveryDate to tomorrow
     if (isToday && currentDate.getHours() >= 11) {
       console.log('Gofor format date: delivery today, after 11:00, next day delivery')
-      const startDate = formatWithDateTime(deliveryDate, `${currentDate.getHours() + hourDifference + 1 }:00`);
-      const endDate = formatWithDateTime(deliveryDate, `${16 + hourDifference }:00`);
+      const startDate = formatWithDateTime(deliveryDate, `${10 + hourDifference }:00`, 1);
+      const endDate = formatWithDateTime(deliveryDate, `${16 + hourDifference }:00`, 1);
       return {
         startDate,
         endDate,
@@ -115,8 +118,8 @@ function formatDate(deliveryDate, deliveryTime) {
     }
 
     console.log('Gofor format date: delivery not today, manual order')
-    const startDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 1 + hourDifference);
-    const endDate = formatWithDateTime(deliveryDate, deliveryTime, 0, 4 + hourDifference);
+    const startDate = formatWithDateTime(deliveryDate, '10:00', 0, 1 + hourDifference);
+    const endDate = formatWithDateTime(deliveryDate, '10:00', 0, 4 + hourDifference);
     return { startDate, endDate, sameDay: true, skipOrder: true };
   } catch (err) {
     console.log('Error in gofor formatDate function: ', err);
@@ -126,12 +129,15 @@ function formatDate(deliveryDate, deliveryTime) {
 
 function formatWithDateTime(deliveryDate, deliveryTime, addDays = 0, addHours = 0) {
   const dateString = new Date(`${deliveryDate} ${deliveryTime}`);
+  dateString.setDate(dateString.getDate() + addDays);
+  dateString.setHours(dateString.getHours() + addHours, dateString.getMinutes());
+
   const year = dateString.getFullYear();
   let month = dateString.getMonth() + 1;
   month = ("0" + month).slice(-2);
-  let day = dateString.getDate() + addDays;
+  let day = dateString.getDate();
   day = ("0" + day).slice(-2);
-  let hour = dateString.getHours() + addHours;
+  let hour = dateString.getHours();
   hour = ("0" + hour).slice(-2);
   let minute = dateString.getMinutes();
   minute = ("0" + minute).slice(-2);

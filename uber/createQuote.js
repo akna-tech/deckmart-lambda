@@ -7,7 +7,7 @@ async function createUberQuote (items, destinationZip, deliveryDate, deliveryTim
             return {
                 uberResult: {
                     carrier: "uber",
-                    price: uberPrice,
+                    price: Number(uberPrice).toFixed(2),
                     sameDay: uberSameDay,
                     error: false,
                     errorMessage: null
@@ -24,7 +24,7 @@ async function createUberQuote (items, destinationZip, deliveryDate, deliveryTim
             return {
                 deckmartExpressResult: {
                     carrier: "deckmartExpress",
-                    price: deckmartExpressPrice,
+                    price: Number(deckmartExpressPrice).toFixed(2),
                     sameDay: deckmartExpressSameDay,
                     error: false,
                     errorMessage: null

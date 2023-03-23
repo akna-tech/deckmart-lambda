@@ -40,12 +40,18 @@ async function readPriceListData() {
 
 function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
     const today = new Date();
+    console.log('Uber isDeliveryTimeAcceptable: deliveryDate: ', deliveryDate);
     const deliveryDateObj = new Date(deliveryDate);
+    console.log('Uber isDeliveryTimeAcceptable: deliveryDateObj: ', deliveryDateObj);
+
     if (today.getFullYear() > deliveryDateObj.getFullYear() ||
         (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() > deliveryDateObj.getMonth()) ||
         (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() <= deliveryDateObj.getMonth() && today.getDate() > deliveryDateObj.getDate())
         ) {
         throw new Error('Delivery date cannot be in the past');
+    }
+    if (deliveryDateObj.getDay() === 0) {
+        return false
     }
     const isToday = today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() === deliveryDateObj.getMonth() && today.getDate() === deliveryDateObj.getDate();
     if (isToday) {
@@ -56,6 +62,15 @@ function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
         const limitTimeHours = parseInt(limitTime.split(':')[0]);
         const limitTimeMinutes = parseInt(limitTime.split(':')[1]);
         const limitTimeStamp = new Date().setHours(limitTimeHours, limitTimeMinutes);
+
+        if (deliveryDateObj.getDate() === 6 && today.getHours() < 13 && limitTimeStamp > deliveryTimeStamp) {
+            return true
+        }
+
+        if (deliveryDateObj.getDate() === 6 && today.getHours() > 13) {
+            return false
+        }
+
         if (limitTimeStamp > deliveryTimeStamp) {
             return true
         }

@@ -80,7 +80,7 @@ async function createOrder(body, service) {
         destinationZip,
         deliveryDate,
         deliveryTime: currentDate,
-        orderNumber,
+        orderNumber: orderNumber.slice(orderNumber.length - 10, orderNumber.length),
         clientName,
       });
       return goforResult;
@@ -140,7 +140,7 @@ async function createQuote(body) {
     deliveryDate,
     deliveryTime: currentDate,
     clientName,
-    orderNumber,
+    orderNumber: orderNumber.slice(orderNumber.length - 10, orderNumber.length),
   });
   const quotes = [manitoulinResult, uberResult, deckmartExpressResult, goforResult];
 

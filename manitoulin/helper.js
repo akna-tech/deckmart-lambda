@@ -70,7 +70,7 @@ function formatManitoulinQuoteItems (items) {
             class_value: getItemClass(item),
             pieces: item.pieces,
             package_code_value: 'SK',
-            description: item.description,
+            description: item.description.slice(0, 34),
             length: Math.round(item.length),
             width: Math.round(item.width),
             height: Math.round(item.height),

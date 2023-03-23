@@ -63,7 +63,7 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
     const { id, timestamp, quote, total_charge } = data
     return {
       carrier: "manitoulin",
-      price: total_charge,
+      price: Number(total_charge).toFixed(2),
       error: false,
       errorMessage: "",
     }
