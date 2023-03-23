@@ -27,7 +27,7 @@ const paymentIntent = async(amount) => {
         currency: 'cad',
     });
     const clientSecret = paymentIntent.client_secret;
-    return {intentId: clientSecret};
+    return {intentId: clientSecret, publicKey: process.env.STRIPE_PUBLIC_KEY};
 }
 
 const paymentIntentWebhook = async (type, data) => {  
