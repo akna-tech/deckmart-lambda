@@ -1,4 +1,4 @@
-const { getUberPrice } = require('./helper.js');
+const { getUberPrice, calculateExpectedDay } = require('./helper.js');
 
 async function createUberQuote (items, destinationZip, deliveryDate, deliveryTime) {
     try {
@@ -9,6 +9,7 @@ async function createUberQuote (items, destinationZip, deliveryDate, deliveryTim
                     carrier: "uber",
                     price: Number(uberPrice).toFixed(2),
                     sameDay: uberSameDay,
+                    expectedDeliveryDate: calculateExpectedDay(deliveryDate, uberSameDay),
                     error: false,
                     errorMessage: null
                 },
@@ -26,6 +27,7 @@ async function createUberQuote (items, destinationZip, deliveryDate, deliveryTim
                     carrier: "deckmartExpress",
                     price: Number(deckmartExpressPrice).toFixed(2),
                     sameDay: deckmartExpressSameDay,
+                    expectedDeliveryDate: calculateExpectedDay(deliveryDate, deckmartExpressSameDay),
                     error: false,
                     errorMessage: null
                 },

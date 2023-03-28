@@ -22,10 +22,11 @@ async function createGoforOrder({
           statusCode: 403,
         };
       }
-      const { startDate, endDate, sameDay, skipOrder } = formatDate(deliveryDate, deliveryTime);
+      const { startDate, endDate, sameDay, skipOrder, expectedDelivery } = formatDate(deliveryDate, deliveryTime);
       if (skipOrder) {
+        console.log('Gofor order skipped: ', skipOrder)
         return {
-          message: "Order will be manually created",
+          message: "Successfully created gofor order",
           statusCode: 200,
         };
       }
@@ -123,6 +124,7 @@ async function createGoforOrder({
       const sameDayMessage = sameDay ? "order will be delivered same day" : "order will be delivered next day";
       return {
         message: "Successfully created gofor order, " + sameDayMessage,
+        expectedDeliveryDate: expectedDelivery,
         statusCode: 200,
       };
     } catch (err) {

@@ -24,7 +24,7 @@ async function createGoforQuote({
         errorMessage: "Destination out of gofor service area",
       };
     }
-    const { startDate, endDate, sameDay } = formatDate(deliveryDate, deliveryTime);
+    const { startDate, endDate, sameDay, expectedDelivery } = formatDate(deliveryDate, deliveryTime);
     console.log('Gofor quote format date result: ', JSON.stringify({ startDate, endDate, sameDay }));
 
     const vehicleId = pickVehicle(items);
@@ -118,6 +118,7 @@ async function createGoforQuote({
     return {
       carrier: "gofor",
       price: Number(data.qtInfo[0].TotalQuoteValue).toFixed(2),
+      expectedDeliveryDate: expectedDelivery,
       error: false,
       errorMessage: "",
       sameDay,

@@ -142,6 +142,10 @@ async function createQuote(body) {
     clientName,
     orderNumber: orderNumber.slice(orderNumber.length - 10, orderNumber.length),
   });
+  if (!manitoulinResult.error) {
+    manitoulinResult.expectedDeliveryDate = goforResult.expectedDeliveryDate 
+    manitoulinResult.expectedDeliveryDate = manitoulinResult.expectedDeliveryDate ? manitoulinResult.expectedDeliveryDate : uberResult.expectedDeliveryDate || deckmartExpressResult.expectedDeliveryDate;
+  }
   const quotes = [manitoulinResult, uberResult, deckmartExpressResult, goforResult];
 
   return {

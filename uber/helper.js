@@ -40,13 +40,13 @@ async function readPriceListData() {
 
 function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
     const today = new Date();
-    console.log('Uber isDeliveryTimeAcceptable: deliveryDate: ', deliveryDate);
+    console.log('Uber isDeliveryTimeAcceptable: today: ', today);
     const deliveryDateObj = new Date(deliveryDate);
     console.log('Uber isDeliveryTimeAcceptable: deliveryDateObj: ', deliveryDateObj);
 
     if (today.getFullYear() > deliveryDateObj.getFullYear() ||
-        (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() > deliveryDateObj.getMonth()) ||
-        (today.getFullYear() <= deliveryDateObj.getFullYear() && today.getMonth() <= deliveryDateObj.getMonth() && today.getDate() > deliveryDateObj.getDate())
+        (today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() > deliveryDateObj.getMonth()) ||
+        (today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() === deliveryDateObj.getMonth() && today.getDate() > deliveryDateObj.getDate())
         ) {
         throw new Error('Delivery date cannot be in the past');
     }
@@ -139,6 +139,23 @@ async function getUberPrice(items, destinationZip, deliveryDate, deliveryTime) {
     return { uberPrice, uberSameDay, deckmartExpressPrice, deckmartExpressSameDay };
 }
 
+function calculateExpectedDay(deliveryDate, sameday) {
+    const isToday = new Date().toISOString().split('T')[0] === deliveryDate;
+    if (isToday && sameday) {
+        return 'Today';
+    }
+    if (isToday && !sameday) {
+        return 'Tomorrow';
+    }
+    if (sameday) {
+        return deliveryDate;
+    }
+    const deliveryDateObj = new Date(deliveryDate);
+    deliveryDateObj.setDate(deliveryDateObj.getDate() + 1);
+    return deliveryDateObj.toISOString().split('T')[0];
+}
+
 module.exports = {
-    getUberPrice
+    getUberPrice,
+    calculateExpectedDay
 }
