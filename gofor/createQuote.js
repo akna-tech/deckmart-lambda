@@ -25,7 +25,7 @@ async function createGoforQuote({
       };
     }
     const { startDate, endDate, sameDay, expectedDelivery } = formatDate(deliveryDate, deliveryTime);
-    console.log('Gofor quote format date result: ', JSON.stringify({ startDate, endDate, sameDay }));
+    console.log('Gofor quote format date result: ', JSON.stringify({ startDate, endDate, sameDay, expectedDelivery }));
 
     const vehicleId = pickVehicle(items);
     const itemsDetails = items.map((item, index) => ({
