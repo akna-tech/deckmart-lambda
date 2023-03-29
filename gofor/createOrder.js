@@ -103,9 +103,8 @@ async function createGoforOrder({
             items: itemsDetails,
             specialInstructions: "",
             dropOffNotification: {
-              notificationType: "None",
               IsCustomText: false,
-              // notificationType: "SMS",
+              notificationType: contactNumber ? "SMS" : "None",
             },
           },
         ],

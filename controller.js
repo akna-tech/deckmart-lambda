@@ -4,7 +4,8 @@ const { createGoforOrder } = require("./gofor/createOrder.js");
 const { createManitoulinQuote } = require('./manitoulin/createQuote.js');
 const { createUberQuote } = require('./uber/createQuote.js');
 const { createGoforQuote } = require("./gofor/createQuote.js");
-const { checkout, paymentIntent, paymentIntentWebhook } = require('./payments/stripe.js')
+const { checkout, paymentIntent, paymentIntentWebhook } = require('./payments/stripe.js');
+const uuid = require('uuid');
 
 async function createOrder(body, service) {
   const {
@@ -16,10 +17,10 @@ async function createOrder(body, service) {
     destinationProvince,
     destinationZip,
     deliveryDate,
-    orderNumber,
     clientName,
   } = body;
   
+  const orderNumber = 'orderNumber';
   const locales = process.env.env === 'production' ? 'en-CA' : undefined;
   const timeZone = process.env.env === 'production' ? 'America/Toronto' : undefined;
   const currentDate = new Date().toLocaleString(locales, {
@@ -80,7 +81,7 @@ async function createOrder(body, service) {
         destinationZip,
         deliveryDate,
         deliveryTime: currentDate,
-        orderNumber: orderNumber.slice(orderNumber.length - 10, orderNumber.length),
+        orderNumber,
         clientName,
       });
       return goforResult;
@@ -104,9 +105,9 @@ async function createQuote(body) {
     items,
     deliveryDate,
     clientName,
-    orderNumber
   } = body;
 
+  const orderNumber = uuid.v4().toString().slice(0, 8);
   const locales = process.env.env === 'production' ? 'en-CA' : undefined;
   const timeZone = process.env.env === 'production' ? 'America/Toronto' : undefined;
   const currentDate = new Date().toLocaleString(locales, {
@@ -140,7 +141,7 @@ async function createQuote(body) {
     deliveryDate,
     deliveryTime: currentDate,
     clientName,
-    orderNumber: orderNumber.slice(orderNumber.length - 10, orderNumber.length),
+    orderNumber,
   });
   if (!manitoulinResult.error) {
     manitoulinResult.expectedDeliveryDate = goforResult.expectedDeliveryDate 
