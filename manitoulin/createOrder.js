@@ -80,6 +80,7 @@ async function createManitoulinOrder ({
       statusCode: 200,
     };
   } catch (err) {
+    console.log('Error Manitoulin Order: ', err)
     if (err.response?.data && err.response?.status) {
       console.log('Error Manitoulin Order: ', JSON.stringify(err.response.data))
       return {

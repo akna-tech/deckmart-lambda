@@ -120,9 +120,9 @@ async function createGoforOrder({
 
       const result = await axios.post(goForQuoteUrl, body, { headers });
       console.log('Gofor Order result: ', result.data);
-      const sameDayMessage = sameDay ? "order will be delivered same day" : "order will be delivered next day";
+      const expectedDay = startDate.split('T')[0];
       return {
-        message: "Successfully created gofor order, " + sameDayMessage,
+        message: "Successfully created gofor order, expected date:  " + expectedDay,
         expectedDeliveryDate: expectedDelivery,
         statusCode: 200,
       };

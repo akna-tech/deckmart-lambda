@@ -69,20 +69,19 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
     }
   }
   catch (err) {
+    let errorMessage;
     if (err.response?.data) {
       console.log('Error Manitoulin Quote: ', JSON.stringify(err.response.data))
+
+      if (err.response?.data[0] === errorResponse.quoteNotFound) 
+        errorMessage = 'Could not find rate quote'
+      else if (err.response.data[0] === errorResponse.wrongAddress) 
+        errorMessage = 'Invalid address'
     }
     else {
       console.log('Unknown Manitoulin quote error: ', err.message)
     }
-
-    let errorMessage;
-    if (err.response?.data[0] === errorResponse.quoteNotFound) 
-      errorMessage = 'Could not find rate quote'
-    else if (err.response.data[0] === errorResponse.wrongAddress) 
-      errorMessage = 'Invalid address'
-    else 
-      errorMessage = 'Unable to get Manitoulin quote'
+    errorMessage = 'Unable to get Manitoulin quote'
 
     return {
       carrier: "manitoulin",

@@ -1,13 +1,15 @@
-const { getUberPrice } = require('./helper.js');
-
+const { getUberPrice, calculateExpectedDay } = require('./helper.js');
 
 async function createUberOrder (items, destinationZip, deliveryDate, deliveryTime) {
     try {
+        console.log(0)
         const { uberPrice, uberSameDay, deckmartExpressPrice, deckmartExpressSameDay } = await getUberPrice(items, destinationZip, deliveryDate, deliveryTime);
         if (!uberPrice && !deckmartExpressPrice) {
             throw new Error('Unable to create Uber/DeckmartExpress order');
         }
-        const dateString = uberSameDay || deckmartExpressSameDay ? 'Same Day' : 'Next Day';
+        console.log(1)
+        const sameDay = uberSameDay || deckmartExpressSameDay;
+        const dateString = calculateExpectedDay(deliveryDate, sameDay)
         return {
             statusCode: 200,
             message: 'Successfully created order, delivery: ' + dateString,

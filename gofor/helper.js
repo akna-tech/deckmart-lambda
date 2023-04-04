@@ -34,9 +34,13 @@ function formatDate(deliveryDate, deliveryTime) {
       minute: 'numeric',
       hour12: false,
     });
+    console.log("Gofor format date -- deliveryTime: ", deliveryTime);
+    console.log('Gofor format date -- currentDateUTC: ', currentDateUTC);
+
 
     // calculate hour difference between UTC and Canada
     const hourDifference = parseInt(parseInt(currentDateUTC.split(':')[0]) - parseInt(deliveryTime.split(':')[0]));
+    console.log('Gofor format date -- hourDifference: ', hourDifference);
 
     let currentDate = new Date(`${deliveryDate} ${deliveryTime}`);
     const deliveryDateObj = new Date(deliveryDate);
@@ -76,7 +80,7 @@ function formatDate(deliveryDate, deliveryTime) {
     if (isBusinessDay(deliveryDateObj) && !isToday) {
       console.log('Gofor format date: case 0');
       console.log(`Gofor: delivery ${deliveryDate}`)
-      const startDate = formatWithDateTime(deliveryDate, `${11 + hourDifference }:00`);
+      const startDate = formatWithDateTime(deliveryDate, `${08 + hourDifference }:00`);
       const endDate = formatWithDateTime(deliveryDate, `${15 + hourDifference }:00`);
       return {
         startDate,
@@ -92,7 +96,7 @@ function formatDate(deliveryDate, deliveryTime) {
       console.log('Gofor format date: case 1');
       const nextBusinessDayString = getNextBusinessDay(deliveryDate);
       console.log(`Gofor: delivery next business day: ${nextBusinessDayString}`)
-      const startDate = formatWithDateTime(nextBusinessDayString, `${11 + hourDifference }:00`);
+      const startDate = formatWithDateTime(nextBusinessDayString, `${08 + hourDifference }:00`);
       const endDate = formatWithDateTime(nextBusinessDayString, `${15 + hourDifference }:00`);
       return {
         startDate,
@@ -121,7 +125,7 @@ function formatDate(deliveryDate, deliveryTime) {
       console.log('Gofor format date: case 3');
       const nextBusinessDayString = getNextBusinessDay(deliveryDate);
       console.log(`Gofor: delivery next business day: ${nextBusinessDayString}`)
-      const startDate = formatWithDateTime(nextBusinessDayString, `${11 + hourDifference }:00`);
+      const startDate = formatWithDateTime(nextBusinessDayString, `${08 + hourDifference }:00`);
       const endDate = formatWithDateTime(nextBusinessDayString, `${15 + hourDifference }:00`);
       return {
         startDate,
@@ -214,4 +218,6 @@ module.exports = {
   getAuthToken,
   formatDate,
   pickVehicle,
+  getNextBusinessDay,
+  isBusinessDay
 };

@@ -1,5 +1,6 @@
 const ExcelJS = require('exceljs');
 const priceListJson = require('./priceList.json');
+const { getNextBusinessDay, isBusinessDay } = require('../gofor/helper.js');
 
 // Used for excel to json conversion
 async function readPriceListData() {
@@ -140,19 +141,20 @@ async function getUberPrice(items, destinationZip, deliveryDate, deliveryTime) {
 }
 
 function calculateExpectedDay(deliveryDate, sameday) {
+    console.log('Uber/Deckmart calculateExpectedDay: deliveryDate', deliveryDate, 'sameday', sameday)
     const isToday = new Date().toISOString().split('T')[0] === deliveryDate;
     if (isToday && sameday) {
-        return 'Today';
-    }
-    if (isToday && !sameday) {
-        return 'Tomorrow';
+        console.log('Uber/Deckmart calculateExpectedDay: case 1')
+        const expectedDay = isBusinessDay(deliveryDate) ? 'Today' : getNextBusinessDay(deliveryDate);
+        return expectedDay;
     }
     if (sameday) {
-        return deliveryDate;
+        console.log('Uber/Deckmart calculateExpectedDay: case 2')
+        const expectedDay = isBusinessDay(deliveryDate) ? deliveryDate : getNextBusinessDay(deliveryDate);
+        return expectedDay;
     }
-    const deliveryDateObj = new Date(deliveryDate);
-    deliveryDateObj.setDate(deliveryDateObj.getDate() + 1);
-    return deliveryDateObj.toISOString().split('T')[0];
+    console.log('Uber/Deckmart calculateExpectedDay: case 3')
+    return getNextBusinessDay(deliveryDate);
 }
 
 module.exports = {
