@@ -49,6 +49,9 @@ function getItemClass (item) {
 
 function formatManitoulinOrderItems (items) {
     const formattedItems = items.map(item => {
+        if (item.length > 25.4 || item.width > 25.4 || item.height > 25.4) {
+            throw new Error('Manitoulin does not support items with dimensions greater than 10 inches');
+        }
         return {
             item_class: getItemClass(item),
             weight_units: 'KG',
@@ -66,6 +69,9 @@ function formatManitoulinOrderItems (items) {
 
 function formatManitoulinQuoteItems (items) {
     const formattedItems = items.map(item => {
+        if (item.length > 25.4 || item.width > 25.4 || item.height > 25.4) {
+            throw new Error('Manitoulin does not support items with dimensions greater than 10 inches');
+        }
         return {
             class_value: getItemClass(item),
             pieces: item.pieces,
@@ -86,15 +92,3 @@ module.exports = {
     formatManitoulinOrderItems,
     formatManitoulinQuoteItems,
 }
-
-// items example
-// [
-//   {
-//     "height": 49,
-//     "length": 32,
-//     "pieces": 1,
-//     "weight": 1.405,
-//     "width": 48,
-//     "description": "Some item description",
-//   },
-// ]
