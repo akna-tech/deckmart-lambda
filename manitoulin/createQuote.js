@@ -70,6 +70,12 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
     }
   }
   catch (err) {
+    if (err?.message === 'Manitoulin does not support items with dimensions greater than 10 foot') {
+      return {
+        message: err.message,
+        statusCode: 500,
+      };
+    }
     let errorMessage;
     if (err.response?.data) {
       console.log('Error Manitoulin Quote: ', JSON.stringify(err.response.data))

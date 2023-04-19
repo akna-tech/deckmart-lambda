@@ -212,6 +212,8 @@ function pickVehicle(items) {
     // case maxItemMeasures.maxLength <= 26 && maxItemMeasures.maxWidth <= 28 && maxItemMeasures.maxHeight <= 48 && maxItemMeasures.totalWeight <= 10000:
     //   return "34";
     default:
+      console.log('Gofor pickVehicle: no vehicle found')
+      console.log('Gofor pickVehicle: maxItemMeasures: ', JSON.stringify(maxItemMeasures))
       throw new Error("No vehicle found");
   }
 }

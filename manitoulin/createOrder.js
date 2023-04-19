@@ -89,6 +89,12 @@ async function createManitoulinOrder ({
         statusCode: err.response.status,
       };
     }
+    if (err?.message === 'Manitoulin does not support items with dimensions greater than 10 foot') {
+      return {
+        message: err.message,
+        statusCode: 500,
+      };
+    }
     console.log('Unknown Manitoulin Order Error: ', err)
     return {
       message: 'Unable to create manitoulin order',

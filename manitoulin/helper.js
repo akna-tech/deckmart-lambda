@@ -49,8 +49,8 @@ function getItemClass (item) {
 
 function formatManitoulinOrderItems (items) {
     const formattedItems = items.map(item => {
-        if (item.length > 25.4 || item.width > 25.4 || item.height > 25.4) {
-            throw new Error('Manitoulin does not support items with dimensions greater than 10 inches');
+        if (item.length > 304.8 || item.width > 304.8 || item.height > 304.8) {
+            throw new Error('Manitoulin does not support items with dimensions greater than 10 foot');
         }
         return {
             item_class: getItemClass(item),
@@ -69,8 +69,8 @@ function formatManitoulinOrderItems (items) {
 
 function formatManitoulinQuoteItems (items) {
     const formattedItems = items.map(item => {
-        if (item.length > 25.4 || item.width > 25.4 || item.height > 25.4) {
-            throw new Error('Manitoulin does not support items with dimensions greater than 10 inches');
+        if (item.length > 304.8 || item.width > 304.8 || item.height > 304.8) {
+            throw new Error('Manitoulin does not support items with dimensions greater than 10 foot');
         }
         return {
             class_value: getItemClass(item),
