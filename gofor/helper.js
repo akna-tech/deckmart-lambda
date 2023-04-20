@@ -27,6 +27,8 @@ async function getAuthToken() {
 }
 
 function formatDate(deliveryDate, deliveryTime) {
+  console.log('Gofor format date -- deliveryDate: ', deliveryDate);
+  console.log("Gofor format date -- deliveryTime: ", deliveryTime);
   try {
     const currentDateUTC = new Date().toLocaleString('en-GB', {
       timeZone: 'UTC',
@@ -34,16 +36,15 @@ function formatDate(deliveryDate, deliveryTime) {
       minute: 'numeric',
       hour12: false,
     });
-    console.log("Gofor format date -- deliveryTime: ", deliveryTime);
     console.log('Gofor format date -- currentDateUTC: ', currentDateUTC);
 
 
     // calculate hour difference between UTC and Canada
     let hourDifference = parseInt(parseInt(currentDateUTC.split(':')[0]) - parseInt(deliveryTime.split(':')[0]));
-    console.log('Gofor format date -- hourDifference: ', hourDifference);
     if (hourDifference < 0) {
       hourDifference = 24 + hourDifference;
     }
+    console.log('Gofor format date -- hourDifference: ', hourDifference);
     let currentDate = new Date(`${deliveryDate} ${deliveryTime}`);
     const deliveryDateObj = new Date(deliveryDate);
     console.log('Gofor format date -- deliveryDateObj: ', deliveryDateObj)
@@ -51,6 +52,9 @@ function formatDate(deliveryDate, deliveryTime) {
 
     // calculate if deliveryDate is today
     const today = new Date();
+    if (today.getHours() < hourDifference) {
+      today.setDate(today.getDate() - 1);
+    }
     console.log('Gofor format date -- today: ', today)
 
     const isToday = deliveryDateObj.getDate() === today.getDate() &&
