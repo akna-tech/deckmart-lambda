@@ -80,7 +80,7 @@ function formatManitoulinQuoteItems (items) {
             length: Math.round(item.length),
             width: Math.round(item.width),
             height: Math.round(item.height),
-            total_weight: Math.round(item.weight),
+            total_weight: Math.round(item.weight * item.pieces),
             weight_unit_value: 'KGS',
             unit_value: 'C',
         }
