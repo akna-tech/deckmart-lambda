@@ -105,6 +105,8 @@ async function createGoforQuote({
       ],
     };
 
+    console.log('Gofor quote body: ', JSON.stringify(body));
+
     const token = await getAuthToken();
     const goForQuoteUrl = process.env.GOFOR_QUOTE_URL;
 

@@ -196,15 +196,17 @@ function pickVehicle(items) {
     totalWeight: 0,
     totalVolume: 0,
   });
-
+  console.log('Gofor: pick vehicle maxItemMeasuresInCmAndKg: ', maxItemMeasuresInCmAndKg)
   const maxItemMeasures = {
     maxLength: maxItemMeasuresInCmAndKg.maxLength / 30.48,
     maxWidth: maxItemMeasuresInCmAndKg.maxWidth / 30.48,
     maxHeight: maxItemMeasuresInCmAndKg.maxHeight / 30.48,
     maxWeight: maxItemMeasuresInCmAndKg.maxWeight * 2.20462,
     totalWeight: maxItemMeasuresInCmAndKg.totalWeight * 2.20462,
-    totalVolume: maxItemMeasuresInCmAndKg.totalVolume / 28316.8
+    totalVolume: maxItemMeasuresInCmAndKg.totalVolume / 929.0304
   };
+
+  console.log('Gofor: pick vehicle maxItemMeasures: ', maxItemMeasures)
   switch (true) {
     case maxItemMeasures.maxLength <= 3 && maxItemMeasures.maxWidth <= 3 && maxItemMeasures.maxHeight <= 2 && maxItemMeasures.maxWeight <= 50 && maxItemMeasures.totalWeight <= 250 && maxItemMeasures.totalVolume <= 3*3*2:
       return "16";
