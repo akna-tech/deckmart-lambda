@@ -185,8 +185,8 @@ function pickVehicle(items) {
     measures.maxWidth = Math.max(measures.maxWidth, item.width);
     measures.maxHeight = Math.max(measures.maxHeight, item.height);
     measures.maxWeight = Math.max(measures.maxWeight, item.weight);
-    measures.totalWeight += item.weight;
-    measures.totalVolume += item.length * item.width * item.height;
+    measures.totalWeight += item.weight * item.pieces;
+    measures.totalVolume += item.length * item.width * item.height * item.pieces;
     return measures;
   }, {
     maxLength: 0,
@@ -196,14 +196,14 @@ function pickVehicle(items) {
     totalWeight: 0,
     totalVolume: 0,
   });
-  console.log('Gofor: pick vehicle maxItemMeasuresInCmAndKg: ', maxItemMeasuresInCmAndKg)
+  console.log('Gofor: pick vehicle maxItemMeasuresInCmAndKg in cm: ', maxItemMeasuresInCmAndKg)
   const maxItemMeasures = {
     maxLength: maxItemMeasuresInCmAndKg.maxLength / 30.48,
     maxWidth: maxItemMeasuresInCmAndKg.maxWidth / 30.48,
     maxHeight: maxItemMeasuresInCmAndKg.maxHeight / 30.48,
     maxWeight: maxItemMeasuresInCmAndKg.maxWeight * 2.20462,
     totalWeight: maxItemMeasuresInCmAndKg.totalWeight * 2.20462,
-    totalVolume: maxItemMeasuresInCmAndKg.totalVolume / 929.0304
+    totalVolume: maxItemMeasuresInCmAndKg.totalVolume * 3.53146667 * 0.00001,
   };
 
   console.log('Gofor: pick vehicle maxItemMeasures: ', maxItemMeasures)
