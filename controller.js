@@ -175,6 +175,7 @@ async function createPaymentIntent(body) {
         return await paymentIntent(amount);
     }
     catch (err) {
+      console.log(JSON.stringify(err))
         return {
             error: {
                 message: 'Unable to create payment intent',
