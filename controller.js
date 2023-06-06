@@ -5,6 +5,8 @@ const { createManitoulinQuote } = require('./manitoulin/createQuote.js');
 const { createUberQuote } = require('./uber/createQuote.js');
 const { createGoforQuote } = require("./gofor/createQuote.js");
 const { checkout, paymentIntent, paymentIntentWebhook } = require('./payments/stripe.js');
+const holidays = require('./gofor/holidays.js');
+const axios = require("axios");
 
 async function createOrder(body, service) {
   console.log(123)
@@ -200,10 +202,57 @@ async function handlePaymentIntentWebhook(body) {
     }
 }
 
+async function getHolidays() {
+    try {
+        // const result = await axios.get('https://canada-holidays.ca/api/v1/holidays?year=2023&federal=1&optional=1');
+        const result = await axios.get('https://canada-holidays.ca/api/v1/provinces/ON?year=2023&optional=false');
+        console.log('result: ', result)
+
+        const holidays = [];
+        result.data.province.holidays.forEach(holiday => {
+          holidays.push(holiday.date);
+        });
+        return holidays
+    }
+    catch (err) {
+        console.log('Error getting holidays: ', err.message);
+        return { error: 'Unable to get holidays' }
+    }
+}
+
 module.exports = {
     createQuote,
     createOrder,
     createCheckout,
     createPaymentIntent,
     handlePaymentIntentWebhook,
+    getHolidays
 }
+
+
+[
+  "2023-01-01",
+  "2023-04-07",
+  "2023-04-10",
+  "2023-05-22",
+  "2023-07-01",
+  "2023-08-07",
+  "2023-09-04",
+  "2023-09-30",
+  "2023-10-09",
+  "2023-11-11",
+  "2023-12-25",
+  "2023-12-26"
+]
+
+[
+  "2023-01-01",
+  "2023-02-20",
+  "2023-04-07",
+  "2023-05-22",
+  "2023-07-01",
+  "2023-09-04",
+  "2023-10-09",
+  "2023-12-25",
+  "2023-12-26"
+]

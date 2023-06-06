@@ -122,6 +122,24 @@ Resources:
                         RestApiId: !Ref MyApi
                         Path: /intent
                         Method: post
+    Holiday:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: !Sub 'holiday'
+            Handler: routes.holiday
+            Runtime: nodejs16.x
+            Timeout: 100
+            Role:
+                Fn::GetAtt:
+                    - LambdaExecutionRole
+                    - Arn
+            Events:
+                GetEvent:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref MyApi
+                        Path: /holiday
+                        Method: post
     LambdaExecutionRole:
         Description: Creating service role in IAM for AWS Lambda
         Type: AWS::IAM::Role

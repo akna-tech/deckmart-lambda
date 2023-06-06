@@ -1,4 +1,4 @@
-const { createOrder, createQuote, createCheckout, createPaymentIntent, handlePaymentIntentWebhook } = require('./controller.js')
+const { createOrder, createQuote, createCheckout, createPaymentIntent, handlePaymentIntentWebhook, getHolidays } = require('./controller.js')
 
 async function order (event, context) {
     try {
@@ -78,10 +78,21 @@ async function paymentIntentWebhook (event) {
     };
 }
 
+async function holiday (event) {
+    const result = await getHolidays();
+    const { error } = result;
+    const statusCode = error ? 500 : 200;
+    return {
+        statusCode,
+        body: JSON.stringify(result),
+    };
+}
+
 module.exports = {
     order,
     quote,
     checkout,
     paymentIntent,
     paymentIntentWebhook,
+    holiday,
 }
