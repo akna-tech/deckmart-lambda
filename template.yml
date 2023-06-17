@@ -32,6 +32,12 @@ Parameters:
     gofor_order_url:
         Type: String
         Description: gofor order url
+    aws_access_key_id:
+        Type: String
+        Description: aws access key id
+    aws_secret_access_key:
+        Type: String
+        Description: aws secret access key
     
     StripeKey:
         Type: String
@@ -61,6 +67,8 @@ Globals:
                 GOFOR_ORDER_URL: !Ref gofor_order_url
                 STRIPE_KEY: !Ref StripeKey
                 STRIPE_PUBLIC_KEY: !Ref StripePublicKey
+                AWS_ACCESS_KEY_ID_SSM: !Ref aws_access_key_id
+                AWS_SECRET_ACCESS_KEY_SSM: !Ref aws_secret_access_key
 
 Resources:
     # REST API
