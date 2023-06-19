@@ -5,6 +5,7 @@ const { createManitoulinQuote } = require('./manitoulin/createQuote.js');
 const { createUberQuote } = require('./uber/createQuote.js');
 const { createGoforQuote } = require("./gofor/createQuote.js");
 const { checkout, paymentIntent, paymentIntentWebhook } = require('./payments/stripe.js');
+const { getHolidaysFromAWS } = require('./holidays.js');
 
 async function createOrder(body, service) {
   console.log(123)
@@ -200,10 +201,15 @@ async function handlePaymentIntentWebhook(body) {
     }
 }
 
+async function getHolidays() {
+  return await getHolidaysFromAWS();
+}
+
 module.exports = {
     createQuote,
     createOrder,
     createCheckout,
     createPaymentIntent,
     handlePaymentIntentWebhook,
+    getHolidays
 }

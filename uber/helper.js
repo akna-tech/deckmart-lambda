@@ -140,21 +140,21 @@ async function getUberPrice(items, destinationZip, deliveryDate, deliveryTime) {
     return { uberPrice, uberSameDay, deckmartExpressPrice, deckmartExpressSameDay };
 }
 
-function calculateExpectedDay(deliveryDate, sameday) {
+async function calculateExpectedDay(deliveryDate, sameday) {
     console.log('Uber/Deckmart calculateExpectedDay: deliveryDate', deliveryDate, 'sameday', sameday)
     const isToday = new Date().toISOString().split('T')[0] === deliveryDate;
     if (isToday && sameday) {
         console.log('Uber/Deckmart calculateExpectedDay: case 1')
-        const expectedDay = isBusinessDay(deliveryDate) ? 'Today' : getNextBusinessDay(deliveryDate);
+        const expectedDay = await isBusinessDay(deliveryDate) ? 'Today' : await getNextBusinessDay(deliveryDate);
         return expectedDay;
     }
     if (sameday) {
         console.log('Uber/Deckmart calculateExpectedDay: case 2')
-        const expectedDay = isBusinessDay(deliveryDate) ? deliveryDate : getNextBusinessDay(deliveryDate);
+        const expectedDay = await isBusinessDay(deliveryDate) ? deliveryDate : await getNextBusinessDay(deliveryDate);
         return expectedDay;
     }
     console.log('Uber/Deckmart calculateExpectedDay: case 3')
-    return getNextBusinessDay(deliveryDate);
+    return await getNextBusinessDay(deliveryDate);
 }
 
 module.exports = {

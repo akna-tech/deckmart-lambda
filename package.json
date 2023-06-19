@@ -5,11 +5,12 @@
   "main": "uber.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:api": "sam build && sam local start-api --env-vars .env.json"
+    "start:api": "sudo sam build && sam local start-api --env-vars .env.json"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1396.0",
     "axios": "^1.3.4",
     "exceljs": "^4.3.0",
     "qs": "^6.11.0",
