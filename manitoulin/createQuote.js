@@ -53,7 +53,8 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
     const headers = {
       'Authorization': `Token ${token}` 
     }
-
+    console.log('Manitoulin quote body: ', JSON.stringify(bodyParameters))
+    console.log('Manitoulin quote headers: ', JSON.stringify(headers))
     const result = await axios.post(
       "https://www.mtdirect.ca/api/online_quoting/quote",
       bodyParameters,
