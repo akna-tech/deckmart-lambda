@@ -9,7 +9,7 @@ async function createUberQuote (items, destinationZip, deliveryDate, deliveryTim
                     carrier: "uber",
                     price: Number(uberPrice).toFixed(2),
                     sameDay: uberSameDay,
-                    expectedDeliveryDate: calculateExpectedDay(deliveryDate, uberSameDay),
+                    expectedDeliveryDate: await calculateExpectedDay(deliveryDate, uberSameDay),
                     error: false,
                     errorMessage: null
                 },
@@ -27,7 +27,7 @@ async function createUberQuote (items, destinationZip, deliveryDate, deliveryTim
                     carrier: "deckmartExpress",
                     price: Number(deckmartExpressPrice).toFixed(2),
                     sameDay: deckmartExpressSameDay,
-                    expectedDeliveryDate: calculateExpectedDay(deliveryDate, deckmartExpressSameDay),
+                    expectedDeliveryDate: await calculateExpectedDay(deliveryDate, deckmartExpressSameDay),
                     error: false,
                     errorMessage: null
                 },

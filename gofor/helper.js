@@ -1,6 +1,6 @@
 const axios = require("axios");
 const qs = require("qs");
-const holidays = require("./holidays.js");
+const { getHolidaysFromAWS } = require("../holidays.js")
 
 async function getAuthToken() {
   const body = qs.stringify({
@@ -26,7 +26,7 @@ async function getAuthToken() {
   return data.access_token;
 }
 
-function formatDate(deliveryDate, deliveryTime) {
+async function formatDate(deliveryDate, deliveryTime) {
   console.log('Gofor format date -- deliveryDate: ', deliveryDate);
   console.log("Gofor format date -- deliveryTime: ", deliveryTime);
   try {
@@ -83,7 +83,7 @@ function formatDate(deliveryDate, deliveryTime) {
 
     // -------
     // case 0
-    if (isBusinessDay(deliveryDateObj) && !isToday) {
+    if (await isBusinessDay(deliveryDateObj) && !isToday) {
       console.log('Gofor format date: case 0');
       console.log(`Gofor: delivery ${deliveryDate}`)
       const startDate = formatWithDateTime(deliveryDate, `${08 + hourDifference }:00`);
@@ -98,9 +98,9 @@ function formatDate(deliveryDate, deliveryTime) {
 
 
     // case 1
-    if (!isBusinessDay(deliveryDateObj)) {
+    if (!await isBusinessDay(deliveryDateObj)) {
       console.log('Gofor format date: case 1');
-      const nextBusinessDayString = getNextBusinessDay(deliveryDate);
+      const nextBusinessDayString = await getNextBusinessDay(deliveryDate);
       console.log(`Gofor: delivery next business day: ${nextBusinessDayString}`)
       const startDate = formatWithDateTime(nextBusinessDayString, `${08 + hourDifference }:00`);
       const endDate = formatWithDateTime(nextBusinessDayString, `${15 + hourDifference }:00`);
@@ -113,10 +113,10 @@ function formatDate(deliveryDate, deliveryTime) {
     }
 
     // case 2
-    if (isToday && currentDate.getHours() < 11) {
+    if (isToday && currentDate.getHours() < 13) {
       console.log('Gofor format date: case 2');
       console.log('Gofor: delivery today')
-      const startDate = formatWithDateTime(deliveryDate, `${11 + hourDifference  }:00`);
+      const startDate = formatWithDateTime(deliveryDate, `${13 + hourDifference  }:00`);
       const endDate = formatWithDateTime(deliveryDate, `${15 + hourDifference }:00`);
       return {
         startDate,
@@ -127,9 +127,9 @@ function formatDate(deliveryDate, deliveryTime) {
     }
 
     // case 3
-    if (isToday && currentDate.getHours() >= 11) {
+    if (isToday && currentDate.getHours() >= 13) {
       console.log('Gofor format date: case 3');
-      const nextBusinessDayString = getNextBusinessDay(deliveryDate);
+      const nextBusinessDayString = await getNextBusinessDay(deliveryDate);
       console.log(`Gofor: delivery next business day: ${nextBusinessDayString}`)
       const startDate = formatWithDateTime(nextBusinessDayString, `${08 + hourDifference }:00`);
       const endDate = formatWithDateTime(nextBusinessDayString, `${15 + hourDifference }:00`);
@@ -165,18 +165,19 @@ function formatWithDateTime(deliveryDate, deliveryTime, addDays = 0, addHours = 
   return `${year}-${month}-${day} ${hour}:${minute}`;
 }
 
-function isBusinessDay(dateString) {
+async function isBusinessDay(dateString) {
   const date = new Date(dateString);
   const day = date.getDay();
   console.log('Gofor isBusinessDay: ', day, dateString)
+  const holidays = await getHolidaysFromAWS();
   return day !== 0 && day !== 6 && !holidays.includes(dateString);
 }
 
-function getNextBusinessDay(dateString) {
+async function getNextBusinessDay(dateString) {
   const nextDay = new Date(dateString);
   nextDay.setDate(nextDay.getDate() + 1);
   const nextDayString = nextDay.toISOString().split('T')[0];
-  return isBusinessDay(nextDayString) ? nextDayString : getNextBusinessDay(nextDayString);
+  return await isBusinessDay(nextDayString) ? nextDayString : await getNextBusinessDay(nextDayString);
 }
 
 function pickVehicle(items) {

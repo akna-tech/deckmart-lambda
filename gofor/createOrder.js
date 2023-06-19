@@ -22,7 +22,7 @@ async function createGoforOrder({
           statusCode: 403,
         };
       }
-      const { startDate, endDate, sameDay, skipOrder, expectedDelivery } = formatDate(deliveryDate, deliveryTime);
+      const { startDate, endDate, sameDay, skipOrder, expectedDelivery } = await formatDate(deliveryDate, deliveryTime);
       if (skipOrder) {
         console.log('Gofor order skipped: ', skipOrder)
         return {

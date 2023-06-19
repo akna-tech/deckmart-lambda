@@ -9,7 +9,7 @@ async function createUberOrder (items, destinationZip, deliveryDate, deliveryTim
         }
         console.log(1)
         const sameDay = uberSameDay || deckmartExpressSameDay;
-        const dateString = calculateExpectedDay(deliveryDate, sameDay)
+        const dateString = await calculateExpectedDay(deliveryDate, sameDay)
         return {
             statusCode: 200,
             message: 'Successfully created order, delivery: ' + dateString,
