@@ -41,12 +41,16 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
       dock_pickup: false,
     }
 
+    const other = {
+    }
+
     const formattedItems = formatManitoulinQuoteItems(items)
     const bodyParameters = {
       contact,
       origin,
       destination,
       items: formattedItems,
+      other,
     }
 
     const token = await getManitoulinAuthToken()
@@ -54,7 +58,6 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
       'Authorization': `Token ${token}` 
     }
     console.log('Manitoulin quote body: ', JSON.stringify(bodyParameters))
-    console.log('Manitoulin quote headers: ', JSON.stringify(headers))
     const result = await axios.post(
       "https://www.mtdirect.ca/api/online_quoting/quote",
       bodyParameters,
