@@ -144,10 +144,10 @@ async function createQuote(body) {
     clientName,
     orderNumber,
   });
-  if (!manitoulinResult.error) {
-    manitoulinResult.expectedDeliveryDate = goforResult.expectedDeliveryDate 
-    manitoulinResult.expectedDeliveryDate = manitoulinResult.expectedDeliveryDate ? manitoulinResult.expectedDeliveryDate : uberResult.expectedDeliveryDate || deckmartExpressResult.expectedDeliveryDate;
-  }
+  // if (!manitoulinResult.error) {
+  //   manitoulinResult.expectedDeliveryDate = goforResult.expectedDeliveryDate 
+  //   manitoulinResult.expectedDeliveryDate = manitoulinResult.expectedDeliveryDate ? manitoulinResult.expectedDeliveryDate : uberResult.expectedDeliveryDate || deckmartExpressResult.expectedDeliveryDate;
+  // }
   const quotes = [manitoulinResult, uberResult, deckmartExpressResult, goforResult];
 
   return {

@@ -68,7 +68,7 @@ async function createManitoulinQuote({ destinationCity, destinationProvince, des
     return {
       carrier: "manitoulin",
       price: Number(total_charge).toFixed(2),
-      expectedDeliveryDate: 'Up to 7 days',
+      expectedDeliveryDate: 'up to 10 days based on order size and destination',
       error: false,
       errorMessage: "",
     }
