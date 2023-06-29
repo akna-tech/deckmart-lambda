@@ -41,8 +41,16 @@ async function formatDate(deliveryDate, deliveryTime) {
 
     // calculate hour difference between UTC and Canada
     let hourDifference = parseInt(parseInt(currentDateUTC.split(':')[0]) - parseInt(deliveryTime.split(':')[0]));
+
+    let isDateDifferentAtUTC = false;
     if (hourDifference < 0) {
+      // hour difference shouldn't be negative
       hourDifference = 24 + hourDifference;
+
+      // delivery date will be next day at UTC
+      isDateDifferentAtUTC = true;
+      deliveryDate = formatWithDateTime(deliveryDate, deliveryTime, 1).split(' ')[0];
+      console.log('Gofor format date -- deliveryDate when hour difference is negative: ', deliveryDate)
     }
     console.log('Gofor format date -- hourDifference: ', hourDifference);
     let currentDate = new Date(`${deliveryDate} ${deliveryTime}`);
@@ -121,8 +129,8 @@ async function formatDate(deliveryDate, deliveryTime) {
       return {
         startDate,
         endDate,
-        sameDay: true,
-        expectedDelivery: 'Today'
+        sameDay: true && !isDateDifferentAtUTC,
+        expectedDelivery: !isDateDifferentAtUTC ? 'Today' : deliveryDate
       }
     }
 
