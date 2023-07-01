@@ -40,16 +40,26 @@ async function readPriceListData() {
 }
 
 function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
-    const today = new Date();
-    console.log('Uber isDeliveryTimeAcceptable: today: ', today);
+    console.log('Uber/DeckmartExpress -- isDeliveryTimeAcceptable: deliveryDate: ', deliveryDate)
+
+    const locales = process.env.env === 'production' ? 'en-CA' : undefined;
+    const timeZone = process.env.env === 'production' ? 'America/Toronto' : undefined;
+    const currentDate = new Date().toLocaleString(locales, { timeZone, hourCycle: 'h23' }).split(',')[0];
+    console.log('Uber/DeckmartExpress -- isDeliveryTimeAcceptable: currentDate: ', currentDate);
+
+    const today = new Date(currentDate);
+    console.log('Uber/DeckmartExpress -- isDeliveryTimeAcceptable: today: ', today);
+
     const deliveryDateObj = new Date(deliveryDate);
-    console.log('Uber isDeliveryTimeAcceptable: deliveryDateObj: ', deliveryDateObj);
+    console.log('Uber/DeckmartExpress -- isDeliveryTimeAcceptable: deliveryDateObj: ', deliveryDateObj);
 
     if (today.getFullYear() > deliveryDateObj.getFullYear() ||
         (today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() > deliveryDateObj.getMonth()) ||
         (today.getFullYear() === deliveryDateObj.getFullYear() && today.getMonth() === deliveryDateObj.getMonth() && today.getDate() > deliveryDateObj.getDate())
         ) {
-        throw new Error('Delivery date cannot be in the past');
+            console.log('Uber/DeckmartExpress -- isDeliveryTimeAcceptable deliveryDateObj: ', deliveryDateObj)
+            console.log('Uber/DeckmartExpress -- isDeliveryTimeAcceptable today: ', today)
+            throw new Error('Delivery date cannot be in the past');
     }
     if (deliveryDateObj.getDay() === 0) {
         return false
@@ -65,18 +75,23 @@ function isDeliveryTimeAcceptable(deliveryDate, deliveryTime, limitTime) {
         const limitTimeStamp = new Date().setHours(limitTimeHours, limitTimeMinutes);
 
         if (deliveryDateObj.getDate() === 6 && today.getHours() < 13 && limitTimeStamp > deliveryTimeStamp) {
+            console.log('Uber isDeliveryTimeAcceptable: case 1')
             return true
         }
 
         if (deliveryDateObj.getDate() === 6 && today.getHours() > 13) {
+            console.log('Uber isDeliveryTimeAcceptable: case 2')
             return false
         }
 
         if (limitTimeStamp > deliveryTimeStamp) {
+            console.log('Uber isDeliveryTimeAcceptable: case 3')
             return true
         }
+        console.log('Uber isDeliveryTimeAcceptable: case 4')
         return false
     }
+    console.log('Uber isDeliveryTimeAcceptable: case 5')
     return true
 }
 
@@ -145,16 +160,16 @@ async function calculateExpectedDay(deliveryDate, sameday) {
     const isToday = new Date().toISOString().split('T')[0] === deliveryDate;
     if (isToday && sameday) {
         console.log('Uber/Deckmart calculateExpectedDay: case 1')
-        const expectedDay = await isBusinessDay(deliveryDate) ? 'Today' : await getNextBusinessDay(deliveryDate);
+        const expectedDay = await isBusinessDay(deliveryDate, true) ? 'Today' : await getNextBusinessDay(deliveryDate, true);
         return expectedDay;
     }
     if (sameday) {
         console.log('Uber/Deckmart calculateExpectedDay: case 2')
-        const expectedDay = await isBusinessDay(deliveryDate) ? deliveryDate : await getNextBusinessDay(deliveryDate);
+        const expectedDay = await isBusinessDay(deliveryDate, true) ? deliveryDate : await getNextBusinessDay(deliveryDate, true);
         return expectedDay;
     }
     console.log('Uber/Deckmart calculateExpectedDay: case 3')
-    return await getNextBusinessDay(deliveryDate);
+    return await getNextBusinessDay(deliveryDate, true);
 }
 
 module.exports = {

@@ -115,8 +115,10 @@ async function createQuote(body) {
     timeZone,
     hour: 'numeric',
     minute: 'numeric',
-    hour12: false,
+    hourCycle: 'h23'
   });
+  console.log('currentDate: ', currentDate)
+
   const manitoulinResult = await createManitoulinQuote({
     destinationCity,
     destinationProvince,
