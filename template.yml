@@ -8,6 +8,9 @@ Parameters:
     m_account:
         Type: String
         Description: manitoulin account
+    m_token:
+        Type: String
+        Description: manitoulin token
     m_company:
         Type: String
         Description: manitoulin company
@@ -57,6 +60,7 @@ Globals:
         Environment:
             Variables:
                 manitoulin_account: !Ref m_account
+                manitoulin_token: !Ref m_token
                 manitoulin_company: !Ref m_company
                 manitoulin_password: !Ref m_password
                 manitoulin_username: !Ref m_username

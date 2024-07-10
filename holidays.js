@@ -1,16 +1,17 @@
-const AWS = require('aws-sdk');
+const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
 
 async function getHolidaysFromAWS() {
   try {
-    const ssm = new AWS.SSM({
+    const ssm = new SSMClient({
       region: 'ca-central-1',
       accessKeyId: process.env.AWS_ACCESS_KEY_ID_SSM,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_SSM,
     });
-    const parameter = await ssm.getParameter({ 
+    const command = new GetParameterCommand({ 
         Name: 'holidays', 
         WithDecryption: false 
-    }).promise();
+    });
+    const parameter = await ssm.send(command);
     console.log('holidays: ', JSON.stringify(parameter.Parameter.Value));
     const data = JSON.parse(parameter.Parameter.Value);
     console.log(data);

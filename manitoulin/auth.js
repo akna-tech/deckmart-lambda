@@ -1,10 +1,10 @@
-const { manitoulin_username, manitoulin_password } = process.env;
+const { manitoulin_username, manitoulin_token } = process.env;
 const axios = require("axios");
 
 async function getManitoulinAuthToken() {
     const body = {
       username: manitoulin_username,
-      password: manitoulin_password,
+      token: manitoulin_token,
       company: "MANITOULIN",
     };
     try {
@@ -13,7 +13,10 @@ async function getManitoulinAuthToken() {
         url: "https://www.mtdirect.ca/api/users/auth",
         data: body,
       });
-      const { token } = result.data;
+      const { token, detail } = result.data;
+      if (detail !== "Success") {
+        throw new Error('Unable to get Manitoulin token');
+      }
       return token;
     } catch (error) {
       console.log("Error in Manitoulin getting auth", error);
